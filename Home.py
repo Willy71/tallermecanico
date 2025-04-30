@@ -3,7 +3,7 @@
 import streamlit as st
 from firebase_config import auth_admin, db
 from firebase_admin import auth
-from google.firebase_admin import _auth_utils
+#from google.firebase_admin import _auth_utils
 import uuid
 
 st.set_page_config(page_title="Login - Oficinas", page_icon="🔧", layout="centered")
