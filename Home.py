@@ -27,7 +27,7 @@ if opcao == "Login":
             user = auth_admin.get_user_by_email(email)
             st.session_state.usuario = user.uid
             st.success("Login realizado com sucesso!")
-            st.experimental_rerun()
+            st.rerun()
         except auth.UserNotFoundError:
             st.error("Usuário não encontrado.")
         except Exception as e:
@@ -55,7 +55,7 @@ elif opcao == "Registrar nova oficina":
 
             st.success("Oficina registrada com sucesso!")
             st.session_state.usuario = oficina_id
-            st.experimental_rerun()
+            st.rerun()
         except auth.EmailAlreadyExistsError:
             st.error("Esse email já está registrado.")
         except Exception as e:
@@ -66,4 +66,4 @@ if st.session_state.usuario:
     st.success(f"Oficina logada: {st.session_state.usuario}")
     if st.button("Sair"):
         st.session_state.usuario = None
-        st.experimental_rerun()
+        st.rerun()
