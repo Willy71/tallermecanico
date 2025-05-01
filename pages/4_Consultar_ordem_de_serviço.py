@@ -1,97 +1,121 @@
-# pages/4_Consultar_ordem_de_servico.py
+# 4_Consultar_ordem_de_servico.py
 
 import streamlit as st
 from firebase_config import db
+from firebase_admin import firestore
+from jinja2 import Environment, FileSystemLoader
+import pdfkit
+import os
+import tempfile
 
-st.set_page_config(page_title="Consultar Ordem de Serviço", page_icon="📄", layout="centered")
+st.set_page_config(page_title="Consultar Ordens de Serviço", page_icon="📄", layout="centered")
 
-st.title("📄 Consultar Ordem de Serviço")
+st.title("📄 Consultar Ordens de Serviço")
 
 if "usuario" not in st.session_state or st.session_state.usuario is None:
-    st.warning("Você precisa estar logado para consultar ordens.")
+    st.warning("Você precisa estar logado.")
     st.stop()
 
-# 🔍 Tipo de busca
-busca_por = st.radio("Buscar por:", ["CPF do Cliente", "Placa do Carro"])
-busca_valor = st.text_input("Digite o valor para busca").strip().upper()
+oficina_id = st.session_state.usuario
 
-if busca_valor:
-    cliente = None
-    carro = None
-    ordens = []
+# 🔍 Busca
+st.subheader("🔍 Buscar")
+tipo = st.radio("Buscar por:", ["Cliente", "Carro"], horizontal=True)
+busca = st.text_input("Digite nome, CPF, telefone, placa, marca ou modelo").strip().lower()
 
-    if busca_por == "CPF do Cliente":
-        # Buscar cliente
-        clientes_ref = db.collection("clientes").where("cpf", "==", busca_valor).where("oficina_id", "==", st.session_state.usuario)
-        for doc in clientes_ref.stream():
-            cliente = doc.to_dict()
-            cliente["id"] = doc.id
-            break
+cliente = None
+carro = None
+ordens = []
 
+if busca:
+    if tipo == "Cliente":
+        ref = db.collection("clientes").where("oficina_id", "==", oficina_id).stream()
+        for doc in ref:
+            c = doc.to_dict()
+            if any(busca in c.get(campo, "").lower() for campo in ["nome", "cpf", "telefone"]):
+                cliente = c
+                cliente["id"] = doc.id
+                break
         if cliente:
-            # Buscar carros do cliente
-            carros_ref = db.collection("carros").where("cliente_id", "==", cliente["id"])
-            carros = [doc.to_dict() | {"id": doc.id} for doc in carros_ref.stream()]
-
-            # Buscar ordens por cliente
-            ordens_ref = db.collection("ordens_servico").where("cliente_id", "==", cliente["id"]).where("oficina_id", "==", st.session_state.usuario)
-            ordens = [doc.to_dict() | {"id": doc.id} for doc in ordens_ref.stream()]
-
+            carros = db.collection("carros").where("cliente_id", "==", cliente["id"]).stream()
+            for car_doc in carros:
+                carro = car_doc.to_dict()
+                carro["id"] = car_doc.id
+                ordens_ref = db.collection("ordens_servico").where("carro_id", "==", carro["id"]).stream()
+                ordens.extend([doc.to_dict() | {"id": doc.id} for doc in ordens_ref])
     else:
-        # Buscar carro por placa
-        carros_ref = db.collection("carros").where("placa", "==", busca_valor).where("oficina_id", "==", st.session_state.usuario)
-        for doc in carros_ref.stream():
-            carro = doc.to_dict()
-            carro["id"] = doc.id
-            break
-
+        carros = db.collection("carros").where("oficina_id", "==", oficina_id).stream()
+        for doc in carros:
+            c = doc.to_dict()
+            if any(busca in c.get(campo, "").lower() for campo in ["placa", "marca", "modelo"]):
+                carro = c
+                carro["id"] = doc.id
+                break
         if carro:
-            # Buscar cliente do carro
-            cliente_ref = db.collection("clientes").document(carro["cliente_id"]).get()
-            cliente = cliente_ref.to_dict() if cliente_ref.exists else None
+            cliente_doc = db.collection("clientes").document(carro["cliente_id"]).get()
+            cliente = cliente_doc.to_dict() if cliente_doc.exists else None
             if cliente:
-                cliente["id"] = cliente_ref.id
+                cliente["id"] = cliente_doc.id
+            ordens_ref = db.collection("ordens_servico").where("carro_id", "==", carro["id"]).stream()
+            ordens = [doc.to_dict() | {"id": doc.id} for doc in ordens_ref]
 
-            # Buscar ordens por carro
-            ordens_ref = db.collection("ordens_servico").where("carro_id", "==", carro["id"]).where("oficina_id", "==", st.session_state.usuario)
-            ordens = [doc.to_dict() | {"id": doc.id} for doc in ordens_ref.stream()]
+# Mostrar dados encontrados
+if cliente:
+    st.subheader("👤 Cliente")
+    st.text(f"Nome: {cliente.get('nome')}")
+    st.text(f"CPF: {cliente.get('cpf')}")
+    st.text(f"Telefone: {cliente.get('telefone')}")
+    st.text(f"Endereço: {cliente.get('endereco')}")
 
-    # Mostrar resultados
-    if cliente:
-        st.subheader("👤 Cliente")
-        st.text(f"Nome: {cliente.get('nome')}")
-        st.text(f"CPF: {cliente.get('cpf')}")
-        st.text(f"Telefone: {cliente.get('telefone')}")
+if carro:
+    st.subheader("🚗 Carro")
+    st.text(f"Placa: {carro.get('placa')}")
+    st.text(f"Marca: {carro.get('marca')} | Modelo: {carro.get('modelo')} | Cor: {carro.get('cor')} | Ano: {carro.get('ano')} | KM: {carro.get('km')}")
 
-    if carro:
-        st.subheader("🚗 Carro")
-        st.text(f"Placa: {carro.get('placa')}")
-        st.text(f"Modelo: {carro.get('marca')} {carro.get('modelo')}")
+if ordens:
+    st.subheader(f"📋 Ordens encontradas: {len(ordens)}")
+    for ordem in ordens:
+        st.markdown("---")
+        st.markdown(f"**Estado:** {ordem.get('estado')}")
+        st.markdown(f"**Mecânico:** {ordem.get('mecanico')}")
+        st.markdown(f"**Previsão de entrega:** {ordem.get('previsao')}")
 
-    if ordens:
-        st.subheader(f"📋 {len(ordens)} Ordem(ns) de Serviço encontrada(s)")
+        st.markdown("**Serviços:**")
+        total_servico = 0
+        for s in ordem.get("servicos", []):
+            st.write(f"- {s['descricao']} - R$ {s['valor']:.2f}")
+            total_servico += s['valor']
 
-        for ordem in ordens:
-            st.markdown("---")
-            st.markdown(f"**Estado:** {ordem.get('estado')}")
-            st.markdown(f"**Mecânico:** {ordem.get('mecanico')}")
-            st.markdown(f"**Previsão de entrega:** {ordem.get('previsao')}")
+        st.markdown("**Peças:**")
+        total_peca = 0
+        for p in ordem.get("pecas", []):
+            st.write(f"- {p['descricao']} - R$ {p['valor']:.2f}")
+            total_peca += p['valor']
 
-            # Serviços
-            st.markdown("**Serviços:**")
-            total_servico = 0
-            for serv in ordem.get("servicos", []):
-                st.write(f"- {serv['descricao']} - R$ {serv['valor']:.2f}")
-                total_servico += serv['valor']
+        total = total_servico + total_peca
+        st.markdown(f"**Total:** R$ {total:.2f}")
 
-            # Peças
-            st.markdown("**Peças:**")
-            total_peca = 0
-            for peca in ordem.get("pecas", []):
-                st.write(f"- {peca['descricao']} - R$ {peca['valor']:.2f}")
-                total_peca += peca['valor']
+        # Gerar PDF
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(f"📄 PDF Cliente - {ordem['id']}"):
+                pdf = gerar_pdf("template.html", cliente, carro, ordem)
+                st.download_button("Download PDF Cliente", pdf, file_name=f"cliente_{ordem['id']}.pdf")
+        with col2:
+            if st.button(f"📄 PDF Oficina - {ordem['id']}"):
+                pdf = gerar_pdf("template_2.html", cliente, carro, ordem)
+                st.download_button("Download PDF Oficina", pdf, file_name=f"oficina_{ordem['id']}.pdf")
+else:
+    if busca:
+        st.warning("Nenhuma ordem encontrada.")
 
-            # Total geral
-            st.markdown(f"**Total:** R$ {total_servico + total_peca:.2f}")
-    else:
-        st.warning("Nenhuma ordem encontrada para essa busca.")
+# Função para gerar PDF
+@st.cache_data
+def gerar_pdf(template_name, cliente, carro, ordem):
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template(template_name)
+    html = template.render(cliente=cliente, carro=carro, ordem=ordem)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        pdfkit.from_string(html, tmp.name)
+        tmp.seek(0)
+        return tmp.read()
