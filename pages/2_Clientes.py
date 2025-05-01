@@ -1,4 +1,4 @@
-# 1_Gestao_cliente.py
+# 2_Clientes.py
 
 import streamlit as st
 from firebase_config import db
