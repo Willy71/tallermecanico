@@ -1,4 +1,4 @@
-# 4_Consultar_ordem_de_servico.py
+# 4_Consultar_ordem_de_servico.py (corrigido com totais e porcentagem adicional de peças)
 
 import streamlit as st
 from firebase_config import db
@@ -11,6 +11,18 @@ import tempfile
 st.set_page_config(page_title="Consultar Ordens de Serviço", page_icon="📄", layout="centered")
 
 st.title("📄 Consultar Ordens de Serviço")
+
+# Função para gerar PDF
+@st.cache_data
+def gerar_pdf(template_name, cliente, carro, ordem):
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template(template_name)
+    html = template.render(cliente=cliente, carro=carro, ordem=ordem)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        pdfkit.from_string(html, tmp.name)
+        tmp.seek(0)
+        return tmp.read()
+
 
 if "usuario" not in st.session_state or st.session_state.usuario is None:
     st.warning("Você precisa estar logado.")
@@ -26,18 +38,6 @@ busca = st.text_input("Digite nome, CPF, telefone, placa, marca ou modelo").stri
 cliente = None
 carro = None
 ordens = []
-
-# Função para gerar PDF
-@st.cache_data
-def gerar_pdf(template_name, cliente, carro, ordem):
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template(template_name)
-    html = template.render(cliente=cliente, carro=carro, ordem=ordem)
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        pdfkit.from_string(html, tmp.name)
-        tmp.seek(0)
-        return tmp.read()
-
 
 if busca:
     if tipo == "Cliente":
@@ -93,16 +93,20 @@ if ordens:
         st.markdown(f"**Previsão de entrega:** {ordem.get('previsao')}")
 
         st.markdown("**Serviços:**")
-        total_servico = 0
+        total_servico = 0.0
         for s in ordem.get("servicos", []):
-            st.write(f"- {s['descricao']} - R$ {s['valor']:.2f}")
-            total_servico += s['valor']
+            valor = float(s.get("valor", 0))
+            st.write(f"- {s.get('descricao')} - R$ {valor:.2f}")
+            total_servico += valor
 
         st.markdown("**Peças:**")
-        total_peca = 0
+        total_peca = 0.0
         for p in ordem.get("pecas", []):
-            st.write(f"- {p['descricao']} - R$ {p['valor']:.2f}")
-            total_peca += p['valor']
+            quant = float(p.get("quant", 1)) if p.get("quant") else 1
+            valor_unit = float(p.get("valor", 0))
+            valor_total = quant * valor_unit
+            st.write(f"- {p.get('descricao')} - R$ {valor_total:.2f}")
+            total_peca += valor_total
 
         total = total_servico + total_peca
         st.markdown(f"**Total:** R$ {total:.2f}")
@@ -110,17 +114,15 @@ if ordens:
         # Gerar PDF
         col1, col2 = st.columns(2)
         with col1:
-            if st.button(f"📄 PDF Cliente"):
+            if st.button(f"📄 PDF Cliente - {ordem['id']}"):
                 pdf = gerar_pdf("template.html", cliente, carro, ordem)
                 name_cliente = f"{carro.get('placa')}_{carro.get('marca')}_{carro.get('modelo')} - CLIENTE.pdf"
                 st.download_button("Download PDF Cliente", pdf, file_name=name_cliente)
-                
         with col2:
-            if st.button(f"📄 PDF Oficina"):
+            if st.button(f"📄 PDF Oficina - {ordem['id']}"):
                 pdf = gerar_pdf("template_2.html", cliente, carro, ordem)
                 name_cliente_2 = f"{carro.get('placa')}_{carro.get('marca')}_{carro.get('modelo')} - OFICINA.pdf"
                 st.download_button("Download PDF Oficina", pdf, file_name=name_cliente_2)
 else:
     if busca:
         st.warning("Nenhuma ordem encontrada.")
-
