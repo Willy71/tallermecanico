@@ -12,16 +12,30 @@ st.set_page_config(page_title="Consultar Ordens de Serviço", page_icon="📄", 
 
 st.title("📄 Consultar Ordens de Serviço")
 
-# Função para gerar PDF
 @st.cache_data
 def gerar_pdf(template_name, cliente, carro, ordem):
+    # Calcular subtotais e total no Python
+    total_servicos = sum(s.get("valor", 0) for s in ordem.get("servicos", []))
+    total_pecas = sum(p.get("valor", 0) for p in ordem.get("pecas", []))
+    total_geral = total_servicos + total_pecas
+
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template(template_name)
-    html = template.render(cliente=cliente, carro=carro, ordem=ordem)
+
+    html = template.render(
+        cliente=cliente,
+        carro=carro,
+        ordem=ordem,
+        total_servicos=total_servicos,
+        total_pecas=total_pecas,
+        total_geral=total_geral,
+    )
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         pdfkit.from_string(html, tmp.name)
         tmp.seek(0)
         return tmp.read()
+
 
 
 if "usuario" not in st.session_state or st.session_state.usuario is None:
