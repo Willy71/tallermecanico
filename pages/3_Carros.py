@@ -1,63 +1,85 @@
-# 3_Carros.py
+# 2_Gestao_carro.py
 
 import streamlit as st
 from firebase_config import db
-from firebase_admin import firestore
 
-st.set_page_config(page_title="Cadastro de Carro", page_icon="🚗", layout="centered")
+st.set_page_config(page_title="Gestão de Carros", page_icon="🚗", layout="centered")
 
-st.title("🚗 Cadastro de Carro")
+st.title("🚗 Gestão de Carros")
 
-# Verifica login
 if "usuario" not in st.session_state or st.session_state.usuario is None:
-    st.warning("Você precisa estar logado para cadastrar carros.")
+    st.warning("Você precisa estar logado para acessar esta página.")
     st.stop()
 
-# Busca clientes da oficina
-clientes_ref = db.collection("clientes").where("oficina_id", "==", st.session_state.usuario)
-clientes_docs = clientes_ref.stream()
+oficina_id = st.session_state.usuario
 
-clientes = []
-cliente_options = []
+# 🔍 Busca
+busca = st.text_input("Buscar por placa, marca ou modelo").strip().lower()
 
-for doc in clientes_docs:
+# 📥 Carregar carros
+carros_ref = db.collection("carros").where("oficina_id", "==", oficina_id)
+carros_docs = carros_ref.stream()
+
+carros = []
+for doc in carros_docs:
     data = doc.to_dict()
-    clientes.append((doc.id, data.get("nome"), data.get("cpf")))
-    cliente_options.append(f"{data.get('nome')} ({data.get('cpf')})")
+    data["id"] = doc.id
+    if not busca or busca in data.get("placa", "").lower() or busca in data.get("marca", "").lower() or busca in data.get("modelo", "").lower():
+        carros.append(data)
 
-if not clientes:
-    st.info("Você precisa cadastrar um cliente antes de cadastrar um carro.")
+if not carros:
+    st.info("Nenhum carro encontrado.")
     st.stop()
 
-# Formulário
-with st.form("form_carro"):
-    cliente_index = st.selectbox("Selecione o cliente", range(len(cliente_options)), format_func=lambda i: cliente_options[i])
-    placa = st.text_input("Placa")
-    marca = st.text_input("Marca")
-    modelo = st.text_input("Modelo")
-    cor = st.text_input("Cor")
-    ano = st.text_input("Ano")
-    km = st.text_input("Km")
-    enviado = st.form_submit_button("Salvar carro")
+# 📋 Lista de carros
+carro_opcoes = [f"{c['placa']} - {c['marca']} {c['modelo']}" for c in carros]
+selecionado = st.selectbox("Selecione um carro para editar:", range(len(carro_opcoes)), format_func=lambda i: carro_opcoes[i])
+carro = carros[selecionado]
 
-    if enviado:
-        if not placa:
-            st.error("A placa é obrigatória.")
-        else:
+# ✏️ Formulário de edição
+with st.form("editar_carro"):
+    st.subheader("✏️ Editar Carro")
+    placa = st.text_input("Placa", value=carro.get("placa", "")).upper()
+    marca = st.text_input("Marca", value=carro.get("marca", ""))
+    modelo = st.text_input("Modelo", value=carro.get("modelo", ""))
+    ano = st.text_input("Ano", value=carro.get("ano", ""))
+    cor = st.text_input("Cor", value=carro.get("cor", ""))
+    km = st.text_input("KM", value=carro.get("km", ""))
+
+    salvar = st.form_submit_button("Salvar alterações")
+    if salvar:
+        # Verificar se outra carro tem mesma placa
+        duplicado = False
+        placa_dup = db.collection("carros").where("placa", "==", placa).where("oficina_id", "==", oficina_id).stream()
+        for d in placa_dup:
+            if d.id != carro["id"]:
+                st.warning("⚠️ Já existe outro carro com esta placa.")
+                duplicado = True
+                break
+
+        if not duplicado:
             try:
-                cliente_id = clientes[cliente_index][0]
-
-                db.collection("carros").add({
-                    "cliente_id": cliente_id,
-                    "oficina_id": st.session_state.usuario,
-                    "placa": placa.upper(),
+                db.collection("carros").document(carro["id"]).update({
+                    "placa": placa,
                     "marca": marca,
                     "modelo": modelo,
-                    "cor": cor,
                     "ano": ano,
-                    "km": km,
-                    "criado_em": firestore.SERVER_TIMESTAMP
+                    "cor": cor,
+                    "km": km
                 })
-                st.success("Carro salvo com sucesso!")
+                st.success("Carro atualizado com sucesso!")
             except Exception as e:
-                st.error(f"Erro ao salvar carro: {e}")
+                st.error(f"Erro ao atualizar: {e}")
+
+# 🗑️ Excluir carro
+st.markdown("---")
+st.subheader("🗑️ Excluir Carro")
+if st.button("Excluir este carro"):
+    confirmar = st.text_input("Digite CONFIRMAR para excluir permanentemente este carro:")
+    if confirmar == "CONFIRMAR":
+        try:
+            db.collection("carros").document(carro["id"]).delete()
+            st.success("Carro excluído com sucesso!")
+            st.experimental_rerun()
+        except Exception as e:
+            st.error(f"Erro ao excluir carro: {e}")
