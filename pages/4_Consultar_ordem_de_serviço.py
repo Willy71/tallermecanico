@@ -114,12 +114,12 @@ if ordens:
         # Gerar PDF
         col1, col2 = st.columns(2)
         with col1:
-            if st.button(f"📄 PDF Cliente - {ordem['id']}"):
+            if st.button(f"📄 PDF Cliente "):
                 pdf = gerar_pdf("template.html", cliente, carro, ordem)
                 name_cliente = f"{carro.get('placa')}_{carro.get('marca')}_{carro.get('modelo')} - CLIENTE.pdf"
                 st.download_button("Download PDF Cliente", pdf, file_name=name_cliente)
         with col2:
-            if st.button(f"📄 PDF Oficina - {ordem['id']}"):
+            if st.button(f"📄 PDF Oficina "):
                 pdf = gerar_pdf("template_2.html", cliente, carro, ordem)
                 name_cliente_2 = f"{carro.get('placa')}_{carro.get('marca')}_{carro.get('modelo')} - OFICINA.pdf"
                 st.download_button("Download PDF Oficina", pdf, file_name=name_cliente_2)
