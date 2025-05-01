@@ -27,6 +27,18 @@ cliente = None
 carro = None
 ordens = []
 
+# Função para gerar PDF
+@st.cache_data
+def gerar_pdf(template_name, cliente, carro, ordem):
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template(template_name)
+    html = template.render(cliente=cliente, carro=carro, ordem=ordem)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        pdfkit.from_string(html, tmp.name)
+        tmp.seek(0)
+        return tmp.read()
+
+
 if busca:
     if tipo == "Cliente":
         ref = db.collection("clientes").where("oficina_id", "==", oficina_id).stream()
@@ -109,13 +121,3 @@ else:
     if busca:
         st.warning("Nenhuma ordem encontrada.")
 
-# Função para gerar PDF
-@st.cache_data
-def gerar_pdf(template_name, cliente, carro, ordem):
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template(template_name)
-    html = template.render(cliente=cliente, carro=carro, ordem=ordem)
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        pdfkit.from_string(html, tmp.name)
-        tmp.seek(0)
-        return tmp.read()
