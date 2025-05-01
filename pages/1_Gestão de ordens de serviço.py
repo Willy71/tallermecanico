@@ -1,4 +1,4 @@
-# 1_Ordem de serviço.py
+# 1_Gestão de ordens de serviço.py
 
 import streamlit as st
 from firebase_config import db
