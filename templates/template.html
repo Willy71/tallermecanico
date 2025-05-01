@@ -5,8 +5,137 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* ... estilos no se modifican ... */
-        /* (los mantengo igual que el original para respetar el diseño que hiciste) */
+        html, body {
+            height: auto;
+            overflow: hidden;
+        }
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0 15px 15px 15px;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            max-width: 150px; /* 25% menor */
+        }
+
+        .company-info {
+            text-align: right;
+            font-size: 0.85em;
+            line-height: 1.3;
+            margin-top: 0; /* subir hacia arriba */
+        }
+
+        .date-in {
+            text-align: right;
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .border-box {
+            border: 2px solid #333;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .vehicle-info {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .vehicle-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .vehicle-left, .vehicle-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        .vehicle-footer {
+            font-size: 1em;
+            font-weight: normal;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 1em;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+            font-size: 0.85em; /* Letra más pequeña */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .total {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 5px;
+            font-size: 0.95em;
+        }
+        .vehicle-footer-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        
+        .vehicle-footer-line .left {
+            text-align: left;
+        }
+        
+        .vehicle-footer-line .right {
+            text-align: right;
+        }
+    
+        .label-small {
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+        
+        .value-small {
+            font-size: 0.95em;
+        }
+    
+        .label-owner {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .value-owner {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .valor-right {
+            text-align: right;
+            width: 80px; /* suficiente para 9999,99 con espacio */
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums; /* alineación perfecta de números */
+        }
+
     </style>
 </head>
 <body>
