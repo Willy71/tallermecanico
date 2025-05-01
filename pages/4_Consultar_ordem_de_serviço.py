@@ -112,11 +112,14 @@ if ordens:
         with col1:
             if st.button(f"📄 PDF Cliente - {ordem['id']}"):
                 pdf = gerar_pdf("template.html", cliente, carro, ordem)
-                st.download_button("Download PDF Cliente", pdf, file_name=f"cliente_{ordem['id']}.pdf")
+                name_cliente = f"{carro.get('placa')}_{carro.get('marca')}_{carro.get('modelo')} - CLIENTE.pdf"
+                st.download_button("Download PDF Cliente", pdf, file_name=name_cliente)
+                
         with col2:
             if st.button(f"📄 PDF Oficina - {ordem['id']}"):
                 pdf = gerar_pdf("template_2.html", cliente, carro, ordem)
-                st.download_button("Download PDF Oficina", pdf, file_name=f"oficina_{ordem['id']}.pdf")
+                name_cliente_2 = f"{carro.get('placa')}_{carro.get('marca')}_{carro.get('modelo')} - OFICINA.pdf"
+                st.download_button("Download PDF Oficina", pdf, file_name=name_cliente_2)
 else:
     if busca:
         st.warning("Nenhuma ordem encontrada.")
