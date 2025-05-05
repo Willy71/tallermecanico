@@ -135,12 +135,12 @@ with col1:
     if st.session_state.num_servicos < 10:
         if st.button("➕ Adicionar Serviço", key="add_servico"):
             st.session_state.num_servicos += 1
-            st.experimental_rerun()
+            st.rerun()
 with col2:
     if st.session_state.num_pecas < 15:
         if st.button("➕ Adicionar Peça", key="add_peca"):
             st.session_state.num_pecas += 1
-            st.experimental_rerun()
+            st.rerun()
 
 with st.form("form_ordem"):
     estado = st.selectbox("Estado da ordem", ["Entrada", "Em andamento", "Finalizado"])
