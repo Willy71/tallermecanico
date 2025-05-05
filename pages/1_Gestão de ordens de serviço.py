@@ -123,23 +123,52 @@ else:
 # ---------- ORDEM DE SERVIÇO ----------
 st.subheader("📋 Ordem de Serviço")
 
+# Inicializar contadores en session_state si no existen
+if "num_servicos" not in st.session_state:
+    st.session_state.num_servicos = 1
+if "num_pecas" not in st.session_state:
+    st.session_state.num_pecas = 1
+
 with st.form("form_ordem"):
     estado = st.selectbox("Estado da ordem", ["Entrada", "Em andamento", "Finalizado"])
     mecanico = st.text_input("Mecânico responsável")
     previsao = st.date_input("Previsão de entrega")
 
-    st.markdown("**Serviço**")
-    desc_servico = st.text_input("Descrição do serviço")
-    valor_servico = st.number_input("Valor do serviço (R$)", min_value=0.0, step=10.0)
+    st.markdown("**Serviços**")
+    servicos = []
+    for i in range(st.session_state.num_servicos):
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            desc_servico = st.text_input(f"Descrição do serviço {i+1}", key=f"servico_desc_{i}")
+        with col2:
+            valor_servico = st.number_input(f"Valor (R$)", min_value=0.0, step=10.0, key=f"servico_valor_{i}")
+        servicos.append({"descricao": desc_servico, "valor": valor_servico})
+    
+    if st.session_state.num_servicos < 10:
+        if st.button("➕ Adicionar Serviço", key="add_servico"):
+            st.session_state.num_servicos += 1
+            st.experimental_rerun()
 
-    st.markdown("**Peça**")
-    desc_peca = st.text_input("Descrição da peça")
-    valor_peca = st.number_input("Valor da peça (R$)", min_value=0.0, step=10.0)
+    st.markdown("**Peças**")
+    pecas = []
+    for i in range(st.session_state.num_pecas):
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            desc_peca = st.text_input(f"Descrição da peça {i+1}", key=f"peca_desc_{i}")
+        with col2:
+            valor_peca = st.number_input(f"Valor (R$)", min_value=0.0, step=10.0, key=f"peca_valor_{i}")
+        pecas.append({"descricao": desc_peca, "valor": valor_peca})
+    
+    if st.session_state.num_pecas < 15:
+        if st.button("➕ Adicionar Peça", key="add_peca"):
+            st.session_state.num_pecas += 1
+            st.experimental_rerun()
 
     enviado = st.form_submit_button("Salvar ordem de serviço")
 
     if enviado:
         try:
+            valor_total = sum(servico["valor"] for servico in servicos) + sum(peca["valor"] for peca in pecas)
             db.collection("ordens_servico").add({
                 "cliente_id": cliente_id,
                 "carro_id": carro_id,
@@ -147,11 +176,14 @@ with st.form("form_ordem"):
                 "estado": estado,
                 "mecanico": mecanico,
                 "previsao": str(previsao),
-                "servicos": [{"descricao": desc_servico, "valor": valor_servico}],
-                "pecas": [{"descricao": desc_peca, "valor": valor_peca}],
-                "valor_total": valor_servico + valor_peca,
+                "servicos": servicos,
+                "pecas": pecas,
+                "valor_total": valor_total,
                 "criado_em": firestore.SERVER_TIMESTAMP
             })
             st.success("✅ Ordem de serviço salva com sucesso!")
+            # Resetar contadores após salvar
+            st.session_state.num_servicos = 1
+            st.session_state.num_pecas = 1
         except Exception as e:
             st.error(f"Erro ao salvar ordem: {e}")
