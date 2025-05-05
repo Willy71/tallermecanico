@@ -129,6 +129,19 @@ if "num_servicos" not in st.session_state:
 if "num_pecas" not in st.session_state:
     st.session_state.num_pecas = 1
 
+# Botones para agregar servicios y piezas fuera del formulario
+col1, col2 = st.columns(2)
+with col1:
+    if st.session_state.num_servicos < 10:
+        if st.button("➕ Adicionar Serviço", key="add_servico"):
+            st.session_state.num_servicos += 1
+            st.experimental_rerun()
+with col2:
+    if st.session_state.num_pecas < 15:
+        if st.button("➕ Adicionar Peça", key="add_peca"):
+            st.session_state.num_pecas += 1
+            st.experimental_rerun()
+
 with st.form("form_ordem"):
     estado = st.selectbox("Estado da ordem", ["Entrada", "Em andamento", "Finalizado"])
     mecanico = st.text_input("Mecânico responsável")
@@ -143,11 +156,6 @@ with st.form("form_ordem"):
         with col2:
             valor_servico = st.number_input(f"Valor (R$)", min_value=0.0, step=10.0, key=f"servico_valor_{i}")
         servicos.append({"descricao": desc_servico, "valor": valor_servico})
-    
-    if st.session_state.num_servicos < 10:
-        if st.button("➕ Adicionar Serviço", key="add_servico"):
-            st.session_state.num_servicos += 1
-            st.experimental_rerun()
 
     st.markdown("**Peças**")
     pecas = []
@@ -158,15 +166,10 @@ with st.form("form_ordem"):
         with col2:
             valor_peca = st.number_input(f"Valor (R$)", min_value=0.0, step=10.0, key=f"peca_valor_{i}")
         pecas.append({"descricao": desc_peca, "valor": valor_peca})
-    
-    if st.session_state.num_pecas < 15:
-        if st.button("➕ Adicionar Peça", key="add_peca"):
-            st.session_state.num_pecas += 1
-            st.experimental_rerun()
 
-    enviado = st.form_submit_button("Salvar ordem de serviço")
+    submit_button = st.form_submit_button("Salvar ordem de serviço")
 
-    if enviado:
+    if submit_button:
         try:
             valor_total = sum(servico["valor"] for servico in servicos) + sum(peca["valor"] for peca in pecas)
             db.collection("ordens_servico").add({
