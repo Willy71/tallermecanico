@@ -71,10 +71,15 @@ def carregar_ordens():
 existing_data = carregar_ordens()
 
 @st.cache_data(ttl=600)
-def cargar_mecanicos():
-    #ws_mecanicos = gc.open_by_key(SPREADSHEET_KEY).worksheet("Mecanicos")
-    nombres = ws_mecanicos.col_values(1)[1:]  # Ignorar header
-    return [n.strip() for n in nombres if n.strip()]
+def carregar_mecanicos():
+    try:
+        user_id = st.session_state.usuario
+        docs = db.collection("usuarios").document(user_id).collection("mecanicos").stream()
+        nomes = [doc.to_dict().get("nome", "").strip() for doc in docs if doc.exists]
+        return [n for n in nomes if n]  # Retorna lista de nomes não vazios
+    except Exception as e:
+        st.error(f"Erro ao carregar mecânicos do Firebase: {e}")
+        return []
 
 #=============================================================================================================================
 # Función para obtener el próximo ID disponible
