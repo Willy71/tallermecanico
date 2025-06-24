@@ -1239,17 +1239,34 @@ if action == "Atualizar ordem existente":
             endereco = st.text_input("Endereço", value=vendor_data.get("endereco", ""))
     
         st.markdown("### 🚜 Serviços")
-        servicos = []
         for i in range(1, 13):
             colA, colB = st.columns([6, 2])
             with colA:
-                desc = st.text_input(f"Serviço {i}", value=vendor_data.get(f"desc_ser_{i}", ""), key=f"desc_ser_{i}")
+                desc = st.text_input(
+                    f"Serviço {i}",
+                    value=vendor_data.get(f"desc_ser_{i}", ""),
+                    key=f"desc_ser_{i}"
+                )
             with colB:
-                valor_raw = vendor_data.get(f"valor_serv_{i}", 0)
-                valor = st.number_input("Valor", value=safe_float(valor_raw) if valor_raw not in [None, ""] else 0.0, key=f"valor_serv_{i}")
-
+                try:
+                    raw_value = vendor_data[f"valor_serv_{i}"]
+                    default_value = float(raw_value) if raw_value is not None and raw_value != "" else 0.0
+                    default_value = max(0.0, min(default_value, 1000000.0))
+                except (KeyError, TypeError, ValueError):
+                    default_value = 0.0
+        
+                valor = st.number_input(
+                    "",
+                    value=default_value,
+                    min_value=0.0,
+                    max_value=1000000.0,
+                    step=0.01,
+                    format="%.2f",
+                    label_visibility="collapsed",
+                    key=f"valor_serv_{i}"
+                )
             servicos.append((desc, valor))
-    
+
         st.markdown("### 🛁 Peças")
         pecas = []
         porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 35)))
@@ -1264,11 +1281,22 @@ if action == "Atualizar ordem existente":
                 valor_unit = st.number_input("Valor unit", value=safe_float(valor_raw) if valor_raw not in [None, ""] else 0.0, key=f"valor_peca_{i}")
             with col4:
                 try:
-                    subtotal = float(quant) * valor
-                    total = subtotal * (1 + porcentaje_adicional / 100)
-                except:
-                    subtotal = total = 0
-            pecas.append((quant, desc, valor, subtotal, total))
+                    raw_valor = vendor_data[f"valor_peca_{i}"]
+                    default_valor = float(raw_valor) if raw_valor not in [None, ""] else 0.0
+                    default_valor = max(0.0, min(default_valor, 1000000.0))
+                except (KeyError, TypeError, ValueError):
+                    default_valor = 0.0
+                
+                valor = st.number_input(
+                    "Valor unit",
+                    value=default_valor,
+                    min_value=0.0,
+                    max_value=1000000.0,
+                    step=0.01,
+                    format="%.2f",
+                    key=f"valor_peca_{i}"
+                )
+
     
         submitted = st.form_submit_button("Salvar alterações")
     
