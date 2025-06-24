@@ -924,7 +924,7 @@ if action == "Nova ordem de serviço":
         line(4, "blue")
         
         # Asegurar que el DataFrame existente tenga todas las columnas en el orden correcto
-        existing_data = existing_data.reindex(columns=columnas_ordenadas)
+        #existing_data = existing_data.reindex(columns=columnas_ordenadas)
      
         with st.container():
             col320, col321, col322, col323, col324 = st.columns([1.2, 1.2, 1, 1, 1])
