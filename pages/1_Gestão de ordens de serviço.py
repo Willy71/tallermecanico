@@ -133,6 +133,21 @@ def buscar_por_placa(placa, df):
         return resultado.iloc[-1].to_dict()  # Tomar el último ingreso en lugar del primero
     return None
 
+def buscar_ordem_por_placa_ou_id(valor_busca, tipo="placa"):
+    try:
+        user_id = st.session_state.usuario
+        col_ref = db.collection("usuarios").document(user_id).collection("ordens_servico")
+        docs = col_ref.stream()
+        for doc in docs:
+            data = doc.to_dict()
+            if tipo == "placa" and data.get("placa", "").upper() == valor_busca.upper():
+                return doc.id, data
+            elif tipo == "id" and str(data.get("user_id")) == str(valor_busca):
+                return doc.id, data
+        return None, None
+    except Exception as e:
+        st.error(f"Erro na busca: {e}")
+        return None, None
 #==============================================================================================================================================================
 
 
@@ -1132,26 +1147,28 @@ elif action == "Atualizar ordem existente":
             
             if search_option == "Placa":
                 with col201:
-                    placa_to_search = st.text_input("Digite o número da placa.").strip().upper()
+                    placa_to_search = st.text_input("Digite o número da placa").strip().upper()
                     if placa_to_search:
-                        resultado = buscar_por_placa(placa_to_search, existing_data)
-                        if resultado:
-                            vendor_data = resultado
-                            vendor_to_update = vendor_data["user_id"]
+                        doc_id, vendor_data = buscar_ordem_por_placa_ou_id(placa_to_search, tipo="placa")
+                        if vendor_data:
+                            vendor_to_update = doc_id
                         else:
                             with col202:
-                                st.write("")  # Espaciador
                                 st.warning("Nenhuma ordem de serviço encontrada com essa placa.")
                                 st.stop()
-                    else:
-                        with col202:
-                            st.write("")  # Espaciador
-                            st.warning("Digite o número da placa para pesquisar e pressione Enter.")
-                            st.stop()
             else:
                 with col201:
-                    vendor_to_update = st.selectbox("Selecione o ID", options=existing_data["user_id"].tolist())
-                    vendor_data = existing_data[existing_data["user_id"] == vendor_to_update].iloc[0].to_dict()
+                    all_ordens = carregar_ordens()
+                    ids_disponiveis = all_ordens["user_id"].astype(str).tolist()
+                    id_selecionado = st.selectbox("Selecione o ID", options=ids_disponiveis)
+                    doc_id, vendor_data = buscar_ordem_por_placa_ou_id(id_selecionado, tipo="id")
+                    if vendor_data:
+                        vendor_to_update = doc_id
+                    else:
+                        with col202:
+                            st.warning("Ordem não encontrada.")
+                            st.stop()
+
 
                             
     #st.subheader("🧪 Diagnóstico de Google Sheets")
@@ -2699,7 +2716,16 @@ elif action == "Atualizar ordem existente":
                     'valor_pag_total': None
                 }
                 #worksheet = gc.open_by_key(SPREADSHEET_KEY).worksheet(SHEET_NAME)
-                atualizar_ordem(worksheet, vendor_to_update, updated_record)
+                #atualizar_ordem(worksheet, vendor_to_update, updated_record)
+                
+                if st.button("Salvar alterações"):
+                    try:
+                        user_id = st.session_state.usuario
+                        db.collection("usuarios").document(user_id).collection("ordens_servico").document(vendor_to_update).update(vendor_data)
+                        st.success("Ordem atualizada com sucesso!")
+                    except Exception as e:
+                        st.error(f"Erro ao atualizar Firebase: {e}")
+
 
 #===================================================================================================================================================================
 # --- Nueva Opción 3: Ver todas las órdenes ---
