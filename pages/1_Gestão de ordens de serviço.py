@@ -1081,7 +1081,7 @@ if action == "Nova ordem de serviço":
                 new_record_df = pd.DataFrame([new_record])
             
                 # Asegurar que el nuevo registro tenga todas las columnas en el orden correcto
-                new_record_df = new_record_df.reindex(columns=columnas_ordenadas)
+                #new_record_df = new_record_df.reindex(columns=columnas_ordenadas)
             
                 # Reemplazar NaN con None en el nuevo registro
                 new_record_df = replace_nan_with_none(new_record_df)
