@@ -1129,7 +1129,10 @@ if action == "Nova ordem de serviço":
 # ==============================================================================================================================================================
 
 if action == "Atualizar ordem existente":
-
+    # Buscar ordem
+    doc_id = None
+    vendor_data = None
+    
     st.markdown("### ✏️ Editar Ordem de Serviço")
     centrar_texto("Selecione o ID ou PLACA da Ordem de serviço que deseja atualizar.", 6, "yellow")
     
@@ -1145,10 +1148,6 @@ if action == "Atualizar ordem existente":
             # Opción para buscar por ID o por placa
             search_option = st.radio("Buscar por:", ["Placa", "ID"])
             
-            # Buscar ordem
-            doc_id = None
-            vendor_data = None
-            
             if search_option == "Placa":
                 placa_to_search = st.text_input("Digite o número da placa").strip().upper()
                 if placa_to_search:
@@ -1156,6 +1155,7 @@ if action == "Atualizar ordem existente":
                     if not vendor_data:
                         st.warning("Nenhuma ordem de serviço encontrada.")
                         st.stop()
+                    vendor_to_update = doc_id
             else:
                 all_ordens = carregar_ordens()
                 ids_disponiveis = all_ordens["user_id"].astype(str).tolist()
@@ -1165,7 +1165,8 @@ if action == "Atualizar ordem existente":
                     st.warning("Ordem não encontrada.")
                     st.stop()
             
-            vendor_to_update = doc_id
+                vendor_to_update = doc_id
+                
 
 
                             
@@ -1174,6 +1175,10 @@ if action == "Atualizar ordem existente":
     # Mostrar IDs tal como los ve worksheet
     #id_col = worksheet.col_values(1)
     #st.write("📋 Columna A (user_id):", id_col)
+    
+    if vendor_data is None:
+        st.warning("Nenhum dado carregado para edição.")
+        st.stop()
 
 
    # Formulário completo para edição de ordem (com serviços e peças)
