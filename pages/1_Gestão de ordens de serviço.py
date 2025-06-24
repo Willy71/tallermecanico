@@ -1274,29 +1274,25 @@ if action == "Atualizar ordem existente":
         for i in range(1, 17):
             col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
             with col1:
-                quant = st.text_input("Qtd", value=vendor_data.get(f"quant_peca_{i}", ""), key=f"quant_peca_{i}")
+                quant = st.text_input("Qtd", value=vendor_data.get(f"quant_peca_{i}", ""), key=f"quant_peca_{i}_edit")
             with col2:
-                desc = st.text_input("Descrição", value=vendor_data.get(f"desc_peca_{i}", ""), key=f"desc_peca_{i}")
+                desc = st.text_input("Descrição", value=vendor_data.get(f"desc_peca_{i}", ""), key=f"desc_peca_{i}_edit")
             with col3:
-                valor_raw = vendor_data.get(f"valor_peca_{i}", 0)
-                valor_unit = st.number_input("Valor unit", value=safe_float(valor_raw) if valor_raw not in [None, ""] else 0.0, key=f"valor_peca_{i}")
+                try:
+                    raw_valor = vendor_data.get(f"valor_peca_{i}", "")
+                    default_valor = float(raw_valor) if raw_valor not in ["", None] else 0.0
+                except:
+                    default_valor = 0.0
+        
+                valor = st.number_input("Valor unit", value=default_valor, key=f"valor_peca_{i}_edit")
             with col4:
                 try:
-                    raw_valor = vendor_data[f"valor_peca_{i}"]
-                    default_valor = float(raw_valor) if raw_valor not in [None, ""] else 0.0
-                    default_valor = max(0.0, min(default_valor, 1000000.0))
-                except (KeyError, TypeError, ValueError):
-                    default_valor = 0.0
-                
-                valor = st.number_input(
-                    "Valor unit",
-                    value=default_valor,
-                    min_value=0.0,
-                    max_value=1000000.0,
-                    step=0.01,
-                    format="%.2f",
-                    key=f"valor_peca_{i}"
-                )
+                    subtotal = float(quant) * valor if quant else 0.0
+                    total = subtotal * (1 + porcentaje_adicional / 100)
+                except:
+                    subtotal = total = 0.0
+        
+            pecas.append((quant, desc, valor, subtotal, total))
 
     
         submitted = st.form_submit_button("Salvar alterações")
