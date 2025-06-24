@@ -148,6 +148,13 @@ def buscar_ordem_por_placa_ou_id(valor_busca, tipo="placa"):
     except Exception as e:
         st.error(f"Erro na busca: {e}")
         return None, None
+
+def safe_float(value):
+    try:
+        return float(str(value).replace(",", "."))
+    except:
+        return 0.0
+
 #==============================================================================================================================================================
 
 
@@ -1238,7 +1245,7 @@ if action == "Atualizar ordem existente":
             with colA:
                 desc = st.text_input(f"Serviço {i}", value=vendor_data.get(f"desc_ser_{i}", ""), key=f"desc_ser_{i}")
             with colB:
-                valor = st.number_input("Valor", value=float(vendor_data.get(f"valor_serv_{i}", 0) or 0), key=f"valor_serv_{i}")
+                valor = st.number_input("Valor", value=safe_float(vendor_data.get(f"valor_serv_{i}", 0)), key=f"valor_serv_{i}")
             servicos.append((desc, valor))
     
         st.markdown("### 🛁 Peças")
@@ -1251,7 +1258,7 @@ if action == "Atualizar ordem existente":
             with col2:
                 desc = st.text_input("Descrição", value=vendor_data.get(f"desc_peca_{i}", ""), key=f"desc_peca_{i}")
             with col3:
-                valor = st.number_input("Valor unit", value=float(vendor_data.get(f"valor_peca_{i}", 0) or 0), key=f"valor_peca_{i}")
+                valor_unit = st.number_input("Valor unit", value=safe_float(vendor_data.get(f"valor_peca_{i}", 0)), key=f"valor_peca_{i}")
             with col4:
                 try:
                     subtotal = float(quant) * valor
