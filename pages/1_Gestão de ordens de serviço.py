@@ -1188,10 +1188,10 @@ if action == "Atualizar ordem existente" and vendor_data:
         col1, col2, col3 = st.columns(3)
         with col1:
             if vendor_data is None:
-    st.warning("Nenhuma ordem de serviço encontrada.")
-    st.stop()
-
-placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
+                st.warning("Nenhuma ordem de serviço encontrada.")
+                st.stop()
+            
+            placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
         with col2:
             carro = st.text_input("Marca", value=vendor_data.get("carro", ""))
         with col3:
