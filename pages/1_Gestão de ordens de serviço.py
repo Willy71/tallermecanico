@@ -1180,122 +1180,122 @@ if action == "Atualizar ordem existente" and vendor_data:
 
    # Formulário completo para edição de ordem (com serviços e peças)
 
-with st.form("form_update_ordem_completo"):
-    st.markdown("### 🖊️ Editar Ordem de Serviço")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
-    with col2:
-        carro = st.text_input("Marca", value=vendor_data.get("carro", ""))
-    with col3:
-        modelo = st.text_input("Modelo", value=vendor_data.get("modelo", ""))
-
-    col4, col5, col6 = st.columns(3)
-    with col4:
-        cor = st.text_input("Cor", value=vendor_data.get("cor", ""))
-    with col5:
-        ano = st.text_input("Ano", value=vendor_data.get("ano", ""))
-    with col6:
-        km = st.text_input("Km", value=vendor_data.get("km", ""))
-
-    col7, col8 = st.columns(2)
-    with col7:
-        mecanicos_lista = carregar_mecanicos()
-        mecanico = st.selectbox("Mecânico", options=mecanicos_lista, index=mecanicos_lista.index(vendor_data.get("mecanico", "")) if vendor_data.get("mecanico", "") in mecanicos_lista else 0)
-    with col8:
-        estado_opcoes = [
-            "Entrada", "Em orçamento", "Aguardando aprovação", "Em reparação",
-            "Concluido", "Não aprovado", "Entregado", "Entregado e cobrado"
-        ]
-        estado = st.selectbox("Estado", options=estado_opcoes, index=estado_opcoes.index(vendor_data.get("estado", "Entrada")))
-
-    st.markdown("### 📆 Datas")
-    col9, col10, col11 = st.columns(3)
-    with col9:
-        data_in = st.text_input("Data entrada", value=vendor_data.get("date_in", ""))
-    with col10:
-        date_prev = st.text_input("Previsão entrega", value=vendor_data.get("date_prev", ""))
-    with col11:
-        date_out = st.text_input("Data saída", value=vendor_data.get("date_out", ""))
-
-    st.markdown("### 💼 Empresa")
-    col12, col13, col14 = st.columns(3)
-    with col12:
-        dono_empresa = st.text_input("Dono da empresa", value=vendor_data.get("dono_empresa", ""))
-    with col13:
-        telefone = st.text_input("Telefone", value=vendor_data.get("telefone", ""))
-    with col14:
-        endereco = st.text_input("Endereço", value=vendor_data.get("endereco", ""))
-
-    st.markdown("### 🚜 Serviços")
-    servicos = []
-    for i in range(1, 13):
-        colA, colB = st.columns([6, 2])
-        with colA:
-            desc = st.text_input(f"Serviço {i}", value=vendor_data.get(f"desc_ser_{i}", ""), key=f"desc_ser_{i}")
-        with colB:
-            valor = st.number_input("Valor", value=float(vendor_data.get(f"valor_serv_{i}", 0) or 0), key=f"valor_serv_{i}")
-        servicos.append((desc, valor))
-
-    st.markdown("### 🛁 Peças")
-    pecas = []
-    porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 35)))
-    for i in range(1, 17):
-        col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
+    with st.form("form_update_ordem_completo"):
+        st.markdown("### 🖊️ Editar Ordem de Serviço")
+    
+        col1, col2, col3 = st.columns(3)
         with col1:
-            quant = st.text_input("Qtd", value=vendor_data.get(f"quant_peca_{i}", ""), key=f"quant_peca_{i}")
+            placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
         with col2:
-            desc = st.text_input("Descrição", value=vendor_data.get(f"desc_peca_{i}", ""), key=f"desc_peca_{i}")
+            carro = st.text_input("Marca", value=vendor_data.get("carro", ""))
         with col3:
-            valor = st.number_input("Valor unit", value=float(vendor_data.get(f"valor_peca_{i}", 0) or 0), key=f"valor_peca_{i}")
+            modelo = st.text_input("Modelo", value=vendor_data.get("modelo", ""))
+    
+        col4, col5, col6 = st.columns(3)
         with col4:
-            try:
-                subtotal = float(quant) * valor
-                total = subtotal * (1 + porcentaje_adicional / 100)
-            except:
-                subtotal = total = 0
-        pecas.append((quant, desc, valor, subtotal, total))
-
-    submitted = st.form_submit_button("Salvar alterações")
-
-if submitted:
-    try:
-        user_id = st.session_state.usuario
-        atualizacao = {
-            "placa": placa,
-            "carro": carro,
-            "modelo": modelo,
-            "cor": cor,
-            "ano": ano,
-            "km": km,
-            "mecanico": mecanico,
-            "estado": estado,
-            "date_in": data_in,
-            "date_prev": date_prev,
-            "date_out": date_out,
-            "dono_empresa": dono_empresa,
-            "telefone": telefone,
-            "endereco": endereco,
-            "porcentaje_adicional": porcentaje_adicional,
-            "ultima_alteracao": firestore.SERVER_TIMESTAMP
-        }
-
-        for i, (desc, valor) in enumerate(servicos, start=1):
-            atualizacao[f"desc_ser_{i}"] = desc
-            atualizacao[f"valor_serv_{i}"] = valor
-
-        for i, (qtd, desc, valor_unit, subtotal, total) in enumerate(pecas, start=1):
-            atualizacao[f"quant_peca_{i}"] = qtd
-            atualizacao[f"desc_peca_{i}"] = desc
-            atualizacao[f"valor_peca_{i}"] = valor_unit
-            atualizacao[f"sub_tota_peca_{i}"] = subtotal
-            atualizacao[f"valor_total_peca_{i}"] = total
-
-        db.collection("usuarios").document(user_id).collection("ordens_servico").document(vendor_to_update).update(atualizacao)
-        st.success("Ordem atualizada com sucesso!")
-    except Exception as e:
-        st.error(f"Erro ao atualizar Firebase: {e}")
+            cor = st.text_input("Cor", value=vendor_data.get("cor", ""))
+        with col5:
+            ano = st.text_input("Ano", value=vendor_data.get("ano", ""))
+        with col6:
+            km = st.text_input("Km", value=vendor_data.get("km", ""))
+    
+        col7, col8 = st.columns(2)
+        with col7:
+            mecanicos_lista = carregar_mecanicos()
+            mecanico = st.selectbox("Mecânico", options=mecanicos_lista, index=mecanicos_lista.index(vendor_data.get("mecanico", "")) if vendor_data.get("mecanico", "") in mecanicos_lista else 0)
+        with col8:
+            estado_opcoes = [
+                "Entrada", "Em orçamento", "Aguardando aprovação", "Em reparação",
+                "Concluido", "Não aprovado", "Entregado", "Entregado e cobrado"
+            ]
+            estado = st.selectbox("Estado", options=estado_opcoes, index=estado_opcoes.index(vendor_data.get("estado", "Entrada")))
+    
+        st.markdown("### 📆 Datas")
+        col9, col10, col11 = st.columns(3)
+        with col9:
+            data_in = st.text_input("Data entrada", value=vendor_data.get("date_in", ""))
+        with col10:
+            date_prev = st.text_input("Previsão entrega", value=vendor_data.get("date_prev", ""))
+        with col11:
+            date_out = st.text_input("Data saída", value=vendor_data.get("date_out", ""))
+    
+        st.markdown("### 💼 Empresa")
+        col12, col13, col14 = st.columns(3)
+        with col12:
+            dono_empresa = st.text_input("Dono da empresa", value=vendor_data.get("dono_empresa", ""))
+        with col13:
+            telefone = st.text_input("Telefone", value=vendor_data.get("telefone", ""))
+        with col14:
+            endereco = st.text_input("Endereço", value=vendor_data.get("endereco", ""))
+    
+        st.markdown("### 🚜 Serviços")
+        servicos = []
+        for i in range(1, 13):
+            colA, colB = st.columns([6, 2])
+            with colA:
+                desc = st.text_input(f"Serviço {i}", value=vendor_data.get(f"desc_ser_{i}", ""), key=f"desc_ser_{i}")
+            with colB:
+                valor = st.number_input("Valor", value=float(vendor_data.get(f"valor_serv_{i}", 0) or 0), key=f"valor_serv_{i}")
+            servicos.append((desc, valor))
+    
+        st.markdown("### 🛁 Peças")
+        pecas = []
+        porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 35)))
+        for i in range(1, 17):
+            col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
+            with col1:
+                quant = st.text_input("Qtd", value=vendor_data.get(f"quant_peca_{i}", ""), key=f"quant_peca_{i}")
+            with col2:
+                desc = st.text_input("Descrição", value=vendor_data.get(f"desc_peca_{i}", ""), key=f"desc_peca_{i}")
+            with col3:
+                valor = st.number_input("Valor unit", value=float(vendor_data.get(f"valor_peca_{i}", 0) or 0), key=f"valor_peca_{i}")
+            with col4:
+                try:
+                    subtotal = float(quant) * valor
+                    total = subtotal * (1 + porcentaje_adicional / 100)
+                except:
+                    subtotal = total = 0
+            pecas.append((quant, desc, valor, subtotal, total))
+    
+        submitted = st.form_submit_button("Salvar alterações")
+    
+    if submitted:
+        try:
+            user_id = st.session_state.usuario
+            atualizacao = {
+                "placa": placa,
+                "carro": carro,
+                "modelo": modelo,
+                "cor": cor,
+                "ano": ano,
+                "km": km,
+                "mecanico": mecanico,
+                "estado": estado,
+                "date_in": data_in,
+                "date_prev": date_prev,
+                "date_out": date_out,
+                "dono_empresa": dono_empresa,
+                "telefone": telefone,
+                "endereco": endereco,
+                "porcentaje_adicional": porcentaje_adicional,
+                "ultima_alteracao": firestore.SERVER_TIMESTAMP
+            }
+    
+            for i, (desc, valor) in enumerate(servicos, start=1):
+                atualizacao[f"desc_ser_{i}"] = desc
+                atualizacao[f"valor_serv_{i}"] = valor
+    
+            for i, (qtd, desc, valor_unit, subtotal, total) in enumerate(pecas, start=1):
+                atualizacao[f"quant_peca_{i}"] = qtd
+                atualizacao[f"desc_peca_{i}"] = desc
+                atualizacao[f"valor_peca_{i}"] = valor_unit
+                atualizacao[f"sub_tota_peca_{i}"] = subtotal
+                atualizacao[f"valor_total_peca_{i}"] = total
+    
+            db.collection("usuarios").document(user_id).collection("ordens_servico").document(vendor_to_update).update(atualizacao)
+            st.success("Ordem atualizada com sucesso!")
+        except Exception as e:
+            st.error(f"Erro ao atualizar Firebase: {e}")
 
 #===================================================================================================================================================================
 # --- Nueva Opción 3: Ver todas las órdenes ---
