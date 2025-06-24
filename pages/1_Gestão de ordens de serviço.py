@@ -1264,8 +1264,9 @@ if action == "Atualizar ordem existente":
                     step=0.01,
                     format="%.2f",
                     label_visibility="collapsed",
-                    key=f"valor_serv_{i}"
+                    key=f"valor_serv_{i}_edit"
                 )
+
             servicos.append((desc, valor))
 
         st.markdown("### 🛁 Peças")
