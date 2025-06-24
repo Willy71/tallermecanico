@@ -1,3 +1,5 @@
+vendor_data = None
+vendor_to_update = None
 # 1_Gestão de ordens de serviço.py
 
 import streamlit as st
@@ -148,10 +150,6 @@ def buscar_ordem_por_placa_ou_id(valor_busca, tipo="placa"):
     except Exception as e:
         st.error(f"Erro na busca: {e}")
         return None, None
-
-vendor_data = None
-vendor_to_update = None
-
 #==============================================================================================================================================================
 
 
@@ -1132,7 +1130,7 @@ if action == "Nova ordem de serviço":
 
 # ==============================================================================================================================================================
 
-if action == "Atualizar ordem existente":
+if action == "Atualizar ordem existente" and vendor_data:
 
     st.markdown("### ✏️ Editar Ordem de Serviço")
     centrar_texto("Selecione o ID ou PLACA da Ordem de serviço que deseja atualizar.", 6, "yellow")
@@ -1189,7 +1187,11 @@ if action == "Atualizar ordem existente":
     
         col1, col2, col3 = st.columns(3)
         with col1:
-            placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
+            if vendor_data is None:
+    st.warning("Nenhuma ordem de serviço encontrada.")
+    st.stop()
+
+placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
         with col2:
             carro = st.text_input("Marca", value=vendor_data.get("carro", ""))
         with col3:
