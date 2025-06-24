@@ -1147,29 +1147,28 @@ if action == "Atualizar ordem existente":
             # Opción para buscar por ID o por placa
             search_option = st.radio("Buscar por:", ["Placa", "ID"])
             
+            # Buscar ordem
+            doc_id = None
+            vendor_data = None
+            
             if search_option == "Placa":
-                with col201:
-                    placa_to_search = st.text_input("Digite o número da placa").strip().upper()
-                    if placa_to_search:
-                        doc_id, vendor_data = buscar_ordem_por_placa_ou_id(placa_to_search, tipo="placa")
-                        if vendor_data:
-                            vendor_to_update = doc_id
-                        else:
-                            with col202:
-                                st.warning("Nenhuma ordem de serviço encontrada com essa placa.")
-                                st.stop()
+                placa_to_search = st.text_input("Digite o número da placa").strip().upper()
+                if placa_to_search:
+                    doc_id, vendor_data = buscar_ordem_por_placa_ou_id(placa_to_search, tipo="placa")
+                    if not vendor_data:
+                        st.warning("Nenhuma ordem de serviço encontrada.")
+                        st.stop()
             else:
-                with col201:
-                    all_ordens = carregar_ordens()
-                    ids_disponiveis = all_ordens["user_id"].astype(str).tolist()
-                    id_selecionado = st.selectbox("Selecione o ID", options=ids_disponiveis)
-                    doc_id, vendor_data = buscar_ordem_por_placa_ou_id(id_selecionado, tipo="id")
-                    if vendor_data:
-                        vendor_to_update = doc_id
-                    else:
-                        with col202:
-                            st.warning("Ordem não encontrada.")
-                            st.stop()
+                all_ordens = carregar_ordens()
+                ids_disponiveis = all_ordens["user_id"].astype(str).tolist()
+                id_selecionado = st.selectbox("Selecione o ID", options=ids_disponiveis)
+                doc_id, vendor_data = buscar_ordem_por_placa_ou_id(id_selecionado, tipo="id")
+                if not vendor_data:
+                    st.warning("Ordem não encontrada.")
+                    st.stop()
+            
+            vendor_to_update = doc_id
+
 
 
                             
