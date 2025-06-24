@@ -1239,6 +1239,7 @@ if action == "Atualizar ordem existente":
             endereco = st.text_input("Endereço", value=vendor_data.get("endereco", ""))
     
         st.markdown("### 🚜 Serviços")
+        servicos = []
         for i in range(1, 13):
             colA, colB = st.columns([6, 2])
             with colA:
