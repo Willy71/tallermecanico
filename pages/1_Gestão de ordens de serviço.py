@@ -1,7 +1,3 @@
-vendor_data = None
-vendor_to_update = None
-# 1_Gestão de ordens de serviço.py
-
 import streamlit as st
 from firebase_config import db
 from firebase_admin import firestore
@@ -1131,6 +1127,10 @@ if action == "Nova ordem de serviço":
 # ==============================================================================================================================================================
 
 if action == "Atualizar ordem existente" and vendor_data:
+
+    vendor_data = None
+    vendor_to_update = None
+    # 1_Gestão de ordens de serviço.py
 
     st.markdown("### ✏️ Editar Ordem de Serviço")
     centrar_texto("Selecione o ID ou PLACA da Ordem de serviço que deseja atualizar.", 6, "yellow")
