@@ -148,6 +148,10 @@ def buscar_ordem_por_placa_ou_id(valor_busca, tipo="placa"):
     except Exception as e:
         st.error(f"Erro na busca: {e}")
         return None, None
+
+vendor_data = None
+vendor_to_update = None
+
 #==============================================================================================================================================================
 
 
@@ -1128,7 +1132,7 @@ if action == "Nova ordem de serviço":
 
 # ==============================================================================================================================================================
 
-if action == "Atualizar ordem existente" and vendor_data:
+if action == "Atualizar ordem existente":
 
     st.markdown("### ✏️ Editar Ordem de Serviço")
     centrar_texto("Selecione o ID ou PLACA da Ordem de serviço que deseja atualizar.", 6, "yellow")
