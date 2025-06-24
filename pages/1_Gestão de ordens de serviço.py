@@ -1126,7 +1126,7 @@ if action == "Nova ordem de serviço":
 
 # ==============================================================================================================================================================
 
-if action == "Atualizar ordem existente" and vendor_data:
+if action == "Atualizar ordem existente":
 
     vendor_data = None
     vendor_to_update = None
