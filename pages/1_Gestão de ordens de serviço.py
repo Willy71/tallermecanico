@@ -1245,7 +1245,9 @@ if action == "Atualizar ordem existente":
             with colA:
                 desc = st.text_input(f"Serviço {i}", value=vendor_data.get(f"desc_ser_{i}", ""), key=f"desc_ser_{i}")
             with colB:
-                valor = st.number_input("Valor", value=safe_float(vendor_data.get(f"valor_serv_{i}", 0)), key=f"valor_serv_{i}")
+                valor_raw = vendor_data.get(f"valor_serv_{i}", 0)
+                valor = st.number_input("Valor", value=safe_float(valor_raw) if valor_raw not in [None, ""] else 0.0, key=f"valor_serv_{i}")
+
             servicos.append((desc, valor))
     
         st.markdown("### 🛁 Peças")
@@ -1258,7 +1260,8 @@ if action == "Atualizar ordem existente":
             with col2:
                 desc = st.text_input("Descrição", value=vendor_data.get(f"desc_peca_{i}", ""), key=f"desc_peca_{i}")
             with col3:
-                valor_unit = st.number_input("Valor unit", value=safe_float(vendor_data.get(f"valor_peca_{i}", 0)), key=f"valor_peca_{i}")
+                valor_raw = vendor_data.get(f"valor_peca_{i}", 0)
+                valor_unit = st.number_input("Valor unit", value=safe_float(valor_raw) if valor_raw not in [None, ""] else 0.0, key=f"valor_peca_{i}")
             with col4:
                 try:
                     subtotal = float(quant) * valor
