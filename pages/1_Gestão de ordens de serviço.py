@@ -306,9 +306,9 @@ if action == "Nova ordem de serviço":
         for i in range(1, 13):
             colA, colB = st.columns([7.2, 2.2])
             with colA:
-                desc = st.text_input("Serviço", key=f"desc_ser_{i}_new", label_visibility="collapsed")
+                desc = st.text_input(f"Serviço {i}", key=f"desc_ser_{i}_new", label_visibility="collapsed")
             with colB:
-                valor = st.number_input("Valor", min_value=0.0, max_value=100000.0, step=0.01, format="%.2f", key=f"valor_serv_{i}_new", label_visibility="collapsed")
+                valor = st.number_input(f"Valor {i}", min_value=0.0, max_value=100000.0, step=0.01, format="%.2f", key=f"valor_serv_{i}_new", label_visibility="collapsed")
             servicos.append((desc, valor))
 
         line(4, "blue")
@@ -322,11 +322,11 @@ if action == "Nova ordem de serviço":
         for i in range(1, 17):
             col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
             with col1:
-                quant = st.text_input("Qtd", value="1", key=f"quant_peca_{i}_new")
+                quant = st.text_input(f"Qtd {i}", value="1", key=f"quant_peca_{i}_new")
             with col2:
-                desc = st.text_input("Descrição", key=f"desc_peca_{i}_new")
+                desc = st.text_input(f"Descrição {i}", key=f"desc_peca_{i}_new")
             with col3:
-                valor = st.number_input("Valor unit", value=0.0, min_value=0.0, max_value=100000.0, step=0.01, key=f"valor_peca_{i}_new")
+                valor = st.number_input(f"Valor unit {i}", value=0.0, min_value=0.0, max_value=100000.0, step=0.01, key=f"valor_peca_{i}_new")
             with col4:
                 try:
                     subtotal = float(quant) * valor if quant else 0.0
