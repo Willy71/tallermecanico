@@ -591,18 +591,15 @@ if action == "Atualizar ordem existente":
 # --- Nueva Opción 3: Ver todas las órdenes ---
 elif action == "Ver todos as ordens de serviço":
     st.header("📋 Lista completa de órdenes de servicio")
+    colunas_desejadas = [
+        "user_id", "date_in", "date_prev", "date_out",
+        "carro", "modelo", "cor", "placa", "km", "ano",
+        "estado", "mecanico", "dono_empresa", "telefone", "endereco"
+        ]
+    # Mostrar solo las columnas existentes en el DataFrame (evita erro)
+    colunas_visiveis = [col for col in colunas_desejadas if col in existing_data.columns]
     
-    # Mostrar el DataFrame con mejor formato
-    st.dataframe(
-        existing_data,
-        use_container_width=True,  # Ajusta el ancho al contenedor
-        hide_index=True,            # Oculta el índice numérico
-        column_config={            # Personaliza columnas (opcional)
-            "date_in": "Data de entrada",
-            "placa": "Placa",
-            "user_id": "N° Ordem"
-        }
-    )
+    st.dataframe(existing_data[colunas_visiveis])
     
     # Opción para exportar a CSV (opcional)
     if st.button("Exportar para CSV"):
@@ -667,19 +664,28 @@ elif action == "Apagar ordem de serviço":
         existing_data.reset_index(drop=True, inplace=True)
         
         try:
-            #worksheet = inicializar_hoja()
-            # Limpiar la hoja antes de actualizar
-            worksheet.clear()
+            user_id = st.session_state.usuario
+            doc_ref = db.collection("usuarios").document(user_id).collection("ordens_servico")
         
-            # Escribir encabezados y datos
-            worksheet.append_row(existing_data.columns.tolist())  # encabezados
-            worksheet.append_rows(existing_data.values.tolist())  # datos
+            # Buscar doc_id por user_id
+            docs = doc_ref.stream()
+            doc_id_to_delete = None
+            for doc in docs:
+                data = doc.to_dict()
+                if str(data.get("user_id")) == str(user_id_to_delete):
+                    doc_id_to_delete = doc.id
+                    break
         
-            st.success("Ordem apagada com sucesso!")
-            st.session_state.confirmado = False  # Resetear estado
-            st.balloons()
+            if doc_id_to_delete:
+                doc_ref.document(doc_id_to_delete).delete()
+                st.success("Ordem apagada com sucesso!")
+                st.session_state.confirmado = False
+                st.balloons()
+            else:
+                st.warning("Documento não encontrado no Firebase.")
         except Exception as e:
-            st.error(f"Erro ao atualizar planilha: {str(e)}")
+            st.error(f"Erro ao apagar do Firebase: {e}")
+
     
     # 5. Mostrar datos actualizados
     st.markdown("### Ordens restantes:")
