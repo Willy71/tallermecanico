@@ -334,8 +334,10 @@ if action == "Nova ordem de serviço":
                 except:
                     subtotal = total = 0.0
             pecas.append((quant, desc, valor, subtotal, total))
-
-        submitted = st.form_submit_button("Salvar nova ordem")
+        
+        col20, col21, col22 = st.columns([3,2,3])
+        with col21:
+            submitted = st.form_submit_button("Salvar nova ordem")
 
         if submitted:
             # Construir y guardar dict con os dados
@@ -540,11 +542,12 @@ if action == "Atualizar ordem existente":
                     total = subtotal * (1 + porcentaje_adicional / 100)
                 except:
                     subtotal = total = 0.0
-        
+            
             pecas.append((quant, desc, valor, subtotal, total))
 
-    
-        submitted = st.form_submit_button("Salvar alterações")
+        col20, col21, col22 = st.columns([3,2,3])
+        with col21:
+            submitted = st.form_submit_button("Salvar alterações")
     
     if submitted:
         try:
