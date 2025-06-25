@@ -250,8 +250,11 @@ vendor_to_update = None  # Establecer un valor predeterminado
 # if action == "Nova ordem de serviço":
 
 if action == "Nova ordem de serviço":
+    st.markdown("### ✏️ Nova Ordem de Serviço")
     with st.form(key="ordem"):
-        centrar_texto("Dados do carro", 2, "yellow")
+        
+        line(4, "blue")
+        st.markdown("### 📆 Datas")
         with st.container():    
             col00, col01, col02, col03, col04 = st.columns(5)
             with col00:
@@ -263,7 +266,8 @@ if action == "Nova ordem de serviço":
                 previsao_entrega = st.text_input("Previsão de entrega")
             with col04:
                 data_saida = st.text_input("Data de saida")
-
+                    
+        st.markdown("### 🖊️ Dados do carro")
         with st.container():    
             col10, col11, col12, col13, col14 = st.columns(5)
             with col10:
@@ -286,7 +290,8 @@ if action == "Nova ordem de serviço":
             with col23:
                 mecanicos_lista = carregar_mecanicos()
                 mecanico = st.selectbox("Mecânico responsável", options=mecanicos_lista)
-
+    
+        st.markdown("### 💼 Empresa")
         with st.container():    
             col30, col31, col32 = st.columns(3)
             with col30:
@@ -297,7 +302,7 @@ if action == "Nova ordem de serviço":
                 endereco = st.text_input("Endereço")
 
         line(4, "blue")
-        centrar_texto("Serviços", 2, "yellow")
+        st.markdown("### 🚜 Serviços")
 
         with st.container():
             col_header_1, col_header_2 = st.columns([6.5, 2.2])
@@ -316,7 +321,7 @@ if action == "Nova ordem de serviço":
             servicos.append((desc, valor))
 
         line(4, "blue")
-        centrar_texto("Peças", 2, "yellow")
+        st.markdown("### 🛁 Peças")
 
         col_perc = st.columns([1])[0]
         with col_perc:
