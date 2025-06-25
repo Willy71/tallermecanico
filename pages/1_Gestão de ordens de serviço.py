@@ -253,7 +253,7 @@ if action == "Nova ordem de serviço":
     st.markdown("### ✏🔧 Nova Ordem de Serviço")
     with st.form(key="ordem"):
 
-        st.markdown("### 🖊️ Dados do carro")
+        st.markdown("### 🚗 Dados do carro")
     
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -300,7 +300,7 @@ if action == "Nova ordem de serviço":
         #==============================================================================================
 
         line(4, "blue")
-        st.markdown("### 🚜 Serviços")
+        st.markdown("### ✅ Serviços")
 
         servicos = []
         for i in range(1, 13):
@@ -312,7 +312,7 @@ if action == "Nova ordem de serviço":
             servicos.append((desc, valor))
 
         line(4, "blue")
-        st.markdown("### 🛁 Peças")
+        st.markdown("### 🔩 Peças")
 
         col_perc = st.columns([1])[0]
         with col_perc:
