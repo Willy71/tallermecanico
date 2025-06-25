@@ -250,56 +250,54 @@ vendor_to_update = None  # Establecer un valor predeterminado
 # if action == "Nova ordem de serviço":
 
 if action == "Nova ordem de serviço":
-    st.markdown("### ✏️ Nova Ordem de Serviço")
+    st.markdown("### ✏🔧 Nova Ordem de Serviço")
     with st.form(key="ordem"):
-        
-        line(4, "blue")
-        st.markdown("### 📆 Datas")
-        with st.container():    
-            col00, col01, col02, col03, col04 = st.columns(5)
-            with col00:
-                placa_input = st.text_input("Placa").strip().upper()
-                placa = ''.join([char.upper() if char.isalpha() else char for char in placa_input])
-            with col02:
-                data_entrada = st.text_input("Data de entrada")
-            with col03:
-                previsao_entrega = st.text_input("Previsão de entrega")
-            with col04:
-                data_saida = st.text_input("Data de saida")
-                    
+
         st.markdown("### 🖊️ Dados do carro")
-        with st.container():    
-            col10, col11, col12, col13, col14 = st.columns(5)
-            with col10:
-                carro = st.text_input("Marca")
-            with col11:
-                modelo = st.text_input("Modelo")
-            with col12:
-                ano = st.text_input("Ano")
-            with col13:
-                cor = st.text_input("Cor")
-            with col14:
-                km = st.text_input("Km")
-
-        opcoes_estado = ["Entrada", "Em orçamento", "Aguardando aprovação", "Em reparação", "Concluido", "Não aprovado", "Entregado", "Entregado e cobrado"]
-
-        with st.container():    
-            col20, col21, col22, col23 = st.columns(4)
-            with col20:
-                estado = st.selectbox("Estado do serviço", opcoes_estado)
-            with col23:
-                mecanicos_lista = carregar_mecanicos()
-                mecanico = st.selectbox("Mecânico responsável", options=mecanicos_lista)
     
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            placa_input = st.text_input("Placa").strip().upper()
+            placa = ''.join([char.upper() if char.isalpha() else char for char in placa_input])
+        with col2:
+            carro = st.text_input("Marca")
+        with col3:
+            modelo = st.text_input("Modelo")
+    
+        col4, col5, col6 = st.columns(3)
+        with col4:
+            cor = st.text_input("Cor")
+        with col5:
+            ano = st.text_input("Ano")
+        with col6:
+            km = st.text_input("Km")
+
+        col7, col8 = st.columns(2)
+        with col7:
+            mecanicos_lista = carregar_mecanicos()
+            mecanico = st.selectbox("Mecânico responsável", options=mecanicos_lista)
+        with col8:
+            opcoes_estado = ["Entrada", "Em orçamento", "Aguardando aprovação", "Em reparação", "Concluido", "Não aprovado", "Entregado", "Entregado e cobrado"]
+            estado = st.selectbox("Estado do serviço", opcoes_estado)
+            
+        st.markdown("### 📆 Datas")
+        col9, col10, col11 = st.columns(3)
+        with col9:
+            data_entrada = st.text_input("Data de entrada")
+        with col10:
+            previsao_entrega = st.text_input("Previsão de entrega")
+        with col11:
+            data_saida = st.text_input("Data de saida")
+
         st.markdown("### 💼 Empresa")
-        with st.container():    
-            col30, col31, col32 = st.columns(3)
-            with col30:
-                dono_empresa = st.text_input("Dono / Empresa")
-            with col31:
-                telefone = st.text_input("Telefone")
-            with col32:
-                endereco = st.text_input("Endereço")
+        col12, col13, col14 = st.columns(3)
+        with col12:
+            dono_empresa = st.text_input("Dono / Empresa")
+        with col13:
+            telefone = st.text_input("Telefone")
+        with col14:
+            endereco = st.text_input("Endereço")
+        #==============================================================================================
 
         line(4, "blue")
         st.markdown("### 🚜 Serviços")
