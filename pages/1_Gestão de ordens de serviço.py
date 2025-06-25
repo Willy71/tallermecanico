@@ -245,25 +245,25 @@ action = st.selectbox(
 # Formulario
 
 vendor_to_update = None  # Establecer un valor predeterminado
+# Reescritura del bloque "Nova ordem de serviço" con bucles
+# para serviços e peças. Este bloque reemplaza el actual dentro del
+# if action == "Nova ordem de serviço":
 
 if action == "Nova ordem de serviço":
-    #st.markdown("Insira os detalhes da nova ordem de serviço")
     with st.form(key="ordem"):
         centrar_texto("Dados do carro", 2, "yellow")
         with st.container():    
             col00, col01, col02, col03, col04 = st.columns(5)
             with col00:
                 placa_input = st.text_input("Placa").strip().upper()
-                # Formatar para garantir que apenas letras fiquem em maiúsculas
                 placa = ''.join([char.upper() if char.isalpha() else char for char in placa_input])
             with col02:
                 data_entrada = st.text_input("Data de entrada")
             with col03:
                 previsao_entrega = st.text_input("Previsão de entrega")
             with col04:
-                data_saida= st.text_input("Data de saida")
-            
-                
+                data_saida = st.text_input("Data de saida")
+
         with st.container():    
             col10, col11, col12, col13, col14 = st.columns(5)
             with col10:
@@ -277,26 +277,15 @@ if action == "Nova ordem de serviço":
             with col14:
                 km = st.text_input("Km")
 
-        # Opciones para el desplegable
-        opciones_estado = [
-            "Entrada",
-            "Em orçamento",
-            "Aguardando aprovação",
-            "Em reparação",
-            "Concluido",
-            "Não aprovado",
-            "Entregado",
-            "Entregado e cobrado"
-        ]
-        
+        opcoes_estado = ["Entrada", "Em orçamento", "Aguardando aprovação", "Em reparação", "Concluido", "Não aprovado", "Entregado", "Entregado e cobrado"]
+
         with st.container():    
             col20, col21, col22, col23 = st.columns(4)
             with col20:
-                estado = st.selectbox("Estado do serviço", opciones_estado)
+                estado = st.selectbox("Estado do serviço", opcoes_estado)
             with col23:
                 mecanicos_lista = carregar_mecanicos()
                 mecanico = st.selectbox("Mecânico responsável", options=mecanicos_lista)
-
 
         with st.container():    
             col30, col31, col32 = st.columns(3)
@@ -310,828 +299,87 @@ if action == "Nova ordem de serviço":
         line(4, "blue")
         centrar_texto("Serviços", 2, "yellow")
 
-        # ENCABEZADOS
         with st.container():
-            col1101, col1102, col1103 = st.columns([0.7, 6.5, 2.2])
-            with col1101:
-                gold_text("#", align="center")
-            with col1102:
+            col_header_1, col_header_2 = st.columns([6.5, 2.2])
+            with col_header_1:
                 gold_text("Descrição do serviço")
-            with col1103:
+            with col_header_2:
                 gold_text("Valor do serviço")
 
+        servicos = []
+        for i in range(1, 13):
+            colA, colB = st.columns([6.5, 2.2])
+            with colA:
+                desc = st.text_input("", key=f"desc_ser_{i}_new", label_visibility="collapsed")
+            with colB:
+                valor = st.number_input("", min_value=0.0, max_value=100000.0, step=0.01, format="%.2f", key=f"valor_serv_{i}_new", label_visibility="collapsed")
+            servicos.append((desc, valor))
 
-        with st.container():    
-            col40, col41, col42 = st.columns([0.7, 6.5, 2.2])
-            with col40:
-                item_serv_1 = 1
-                gold_text("1", align="center")
-            with col41:
-                desc_ser_1 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_1")
-            with col42:
-                valor_serv_1 = st.number_input(" ", value=None, label_visibility="collapsed", key="valor_serv_1")
-                
-        with st.container():    
-            col50, col51, col52 = st.columns([0.7, 6.5, 2.2])
-            with col50:
-                item_serv_2 = 2
-                gold_text("2", align="center")
-            with col51:
-                desc_ser_2 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_2")
-            with col52:
-                valor_serv_2 = st.number_input(" ", value=None, label_visibility="collapsed", key="valor_serv_2")
-
-        with st.container():    
-            col60, col61, col62 = st.columns([0.7, 6.5, 2.2])
-            with col60:
-                item_serv_3 = 3
-                gold_text("3", align="center")
-            with col61:
-                desc_ser_3 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_3")
-            with col62:
-                valor_serv_3 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_3")
-
-        with st.container():    
-            col70, col71, col72 = st.columns([0.7, 6.5, 2.2])
-            with col70:
-                item_serv_4 = 4
-                gold_text("4", align="center")
-            with col71:
-                desc_ser_4 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_4")
-            with col72:
-                valor_serv_4 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_4")
-                
-        with st.container():    
-            col80, col81, col82 = st.columns([0.7, 6.5, 2.2])
-            with col80:
-                item_serv_5 = 5
-                gold_text("5", align="center")
-            with col81:
-                desc_ser_5 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_5")
-            with col82:
-                valor_serv_5 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_5")
-        
-        with st.container():    
-            col90, col91, col92 = st.columns([0.7, 6.5, 2.2])
-            with col90:
-                item_serv_6 = 6
-                gold_text("6", align="center")
-            with col91:
-                desc_ser_6 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_6")
-            with col92:
-                valor_serv_6 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_6")
-        
-        with st.container():    
-            col100, col101, col102 = st.columns([0.7, 6.5, 2.2])
-            with col100:
-                item_serv_7 = 7
-                gold_text("7", align="center")
-            with col101:
-                desc_ser_7 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_7")
-            with col102:
-                valor_serv_7 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_7")
-        
-        with st.container():    
-            col110, col111, col112 = st.columns([0.7, 6.5, 2.2])
-            with col110:
-                item_serv_8 = 8
-                gold_text("8", align="center")
-            with col111:
-                desc_ser_8 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_8")
-            with col112:
-                valor_serv_8 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_8")
-        
-        with st.container():    
-            col120, col121, col122 = st.columns([0.7, 6.5, 2.2])
-            with col120:
-                item_serv_9 = 9
-                gold_text("9", align="center")
-            with col121:
-                desc_ser_9 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_9")
-            with col122:
-                valor_serv_9 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_9")
-        
-        with st.container():    
-            col130, col131, col132 = st.columns([0.7, 6.5, 2.2])
-            with col130:
-                item_serv_10 = 10
-                gold_text("10", align="center")
-            with col131:
-                desc_ser_10 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_10")
-            with col132:
-                valor_serv_10 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_10")
-        
-        with st.container():    
-            col140, col141, col142 = st.columns([0.7, 6.5, 2.2])
-            with col140:
-                item_serv_11 = 11
-                gold_text("11", align="center")
-            with col141:
-                desc_ser_11 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_11")
-            with col142:
-                valor_serv_11 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_11")
-        
-        with st.container():    
-            col150, col151, col152 = st.columns([0.7, 6.5, 2.2])
-            with col150:
-                item_serv_12 = 12
-                gold_text("12", align="center")
-            with col151:
-                desc_ser_12 = st.text_input("", "", label_visibility="collapsed", key="desc_ser_12")
-            with col152:
-                valor_serv_12 = st.text_input(" ", value=None, label_visibility="collapsed", key="valor_serv_12")
-                
         line(4, "blue")
         centrar_texto("Peças", 2, "yellow")
-        
-        with st.container():
-            col_perc, col_empty, col_final = st.columns([4, 2.5, 4])
-            with col_empty:
-                porcentaje_adicional = st.number_input(
-                    "Porcentagem adicional (%)",
-                    min_value=0.0,
-                    max_value=100.0,
-                    value=35.0,  # Valor por defecto del 30%
-                    step=0.5,
-                    key="porcentaje_adicional"
-                )
-        # ENCABEZADOS
-        with st.container():
-            col1001, col1002, col1003, col1004, col1005, col1006 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col1001:
-                gold_text("#")
-            with col1002:
-                gold_text("Quant.")
-            with col1003:
-                gold_text("Descrição da peça")
-            with col1004:
-                gold_text("Valor Unit")
-            with col1005:
-                gold_text("Sub Total")
-            with col1006:
-                gold_text("Total")
-        
-                        
-        with st.container():  
-            col160, col161, col162, col163, col164, col165 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col160:
-                gold_text("1")     
-            with col161:
-                quant_peca_1 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_1")
-            with col162:
-                desc_peca_1 = st.text_input("", " ", label_visibility="collapsed", key="desc_peca_1")
-            with col163:
-                valor_peca_1 = st.number_input(" ", value=None, label_visibility="collapsed", key="valor_peca_1")
-            with col164: 
-                if quant_peca_1 and valor_peca_1:
-                    try:
-                        costo_inicial_1 = float(quant_peca_1) * float(valor_peca_1)
-                        gold_text(f"R$ {costo_inicial_1:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col165:
-                # Mostrar costo final (con porcentaje aplicado)
-                if quant_peca_1 and valor_peca_1 and porcentaje_adicional:
-                    try:
-                        costo_final_1 = float(quant_peca_1) * float(valor_peca_1) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_1:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")   
 
+        col_perc = st.columns([1])[0]
+        with col_perc:
+            porcentaje_adicional = st.number_input("% adicional", min_value=0.0, max_value=100.0, value=35.0, step=0.5)
 
-        with st.container():
-            col170, col171, col172, col173, col174, col175 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col170:
-                gold_text("2")     
-            with col171:
-                quant_peca_2 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_2")
-            with col172:
-                desc_peca_2 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_2")
-            with col173:
-                valor_peca_2 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_2")
-            with col174: 
-                if quant_peca_2 and valor_peca_2:
-                    try:
-                        costo_inicial_2 = float(quant_peca_2) * float(valor_peca_2)
-                        gold_text(f"R$ {costo_inicial_2:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col175:
-                # Mostrar costo final (con porcentaje aplicado)
-                if quant_peca_2 and valor_peca_2 and porcentaje_adicional:
-                    try:
-                        costo_final_2 = float(quant_peca_2) * float(valor_peca_2) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_2:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")                
-
-        with st.container():
-            col180, col181, col182, col183, col184, col185 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col180:
-                gold_text("3")     
-            with col181:
-                quant_peca_3 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_3")
-            with col182:
-                desc_peca_3 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_3")
-            with col183:
-                valor_peca_3 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_3")
-            with col184: 
-                if quant_peca_3 and valor_peca_3:
-                    try:
-                        costo_inicial_3 = float(quant_peca_3) * float(valor_peca_3)
-                        gold_text(f"R$ {costo_inicial_3:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col185:
-                if quant_peca_3 and valor_peca_3 and porcentaje_adicional:
-                    try:
-                        costo_final_3 = float(quant_peca_3) * float(valor_peca_3) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_3:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-        
-        with st.container():
-            col190, col191, col192, col193, col194, col195 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col190:
-                gold_text("4")     
-            with col191:
-                quant_peca_4 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_4")
-            with col192:
-                desc_peca_4 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_4")
-            with col193:
-                valor_peca_4 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_4")
-            with col194: 
-                if quant_peca_4 and valor_peca_4:
-                    try:
-                        costo_inicial_4 = float(quant_peca_4) * float(valor_peca_4)
-                        gold_text(f"R$ {costo_inicial_4:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col195:
-                if quant_peca_4 and valor_peca_4 and porcentaje_adicional:
-                    try:
-                        costo_final_4 = float(quant_peca_4) * float(valor_peca_4) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_4:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col200, col201, col202, col203, col204, col205 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col200:
-                gold_text("5")     
-            with col201:
-                quant_peca_5 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_5")
-            with col202:
-                desc_peca_5 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_5")
-            with col203:
-                valor_peca_5 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_5")
-            with col204: 
-                if quant_peca_5 and valor_peca_5:
-                    try:
-                        costo_inicial_5 = float(quant_peca_5) * float(valor_peca_5)
-                        gold_text(f"R$ {costo_inicial_5:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col205:
-                if quant_peca_5 and valor_peca_5 and porcentaje_adicional:
-                    try:
-                        costo_final_5 = float(quant_peca_5) * float(valor_peca_5) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_5:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col210, col211, col212, col213, col214, col215 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col210:
-                gold_text("6")     
-            with col211:
-                quant_peca_6 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_6")
-            with col212:
-                desc_peca_6 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_6")
-            with col213:
-                valor_peca_6 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_6")
-            with col214: 
-                if quant_peca_6 and valor_peca_6:
-                    try:
-                        costo_inicial_6 = float(quant_peca_6) * float(valor_peca_6)
-                        gold_text(f"R$ {costo_inicial_6:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col215:
-                if quant_peca_6 and valor_peca_6 and porcentaje_adicional:
-                    try:
-                        costo_final_6 = float(quant_peca_6) * float(valor_peca_6) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_6:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col220, col221, col222, col223, col224, col225 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col220:
-                gold_text("7")     
-            with col221:
-                quant_peca_7 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_7")
-            with col222:
-                desc_peca_7 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_7")
-            with col223:
-                valor_peca_7 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_7")
-            with col224: 
-                if quant_peca_7 and valor_peca_7:
-                    try:
-                        costo_inicial_7 = float(quant_peca_7) * float(valor_peca_7)
-                        gold_text(f"R$ {costo_inicial_7:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col225:
-                if quant_peca_7 and valor_peca_7 and porcentaje_adicional:
-                    try:
-                        costo_final_7 = float(quant_peca_7) * float(valor_peca_7) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_7:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col230, col231, col232, col233, col234, col235 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col230:
-                gold_text("8")     
-            with col231:
-                quant_peca_8 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_8")
-            with col232:
-                desc_peca_8 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_8")
-            with col233:
-                valor_peca_8 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_8")
-            with col234: 
-                if quant_peca_8 and valor_peca_8:
-                    try:
-                        costo_inicial_8 = float(quant_peca_8) * float(valor_peca_8)
-                        gold_text(f"R$ {costo_inicial_8:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col235:
-                if quant_peca_8 and valor_peca_8 and porcentaje_adicional:
-                    try:
-                        costo_final_8 = float(quant_peca_8) * float(valor_peca_8) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_8:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col240, col241, col242, col243, col244, col245 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col240:
-                gold_text("9")     
-            with col241:
-                quant_peca_9 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_9")
-            with col242:
-                desc_peca_9 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_9")
-            with col243:
-                valor_peca_9 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_9")
-            with col244: 
-                if quant_peca_9 and valor_peca_9:
-                    try:
-                        costo_inicial_9 = float(quant_peca_9) * float(valor_peca_9)
-                        gold_text(f"R$ {costo_inicial_9:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col245:
-                if quant_peca_9 and valor_peca_9 and porcentaje_adicional:
-                    try:
-                        costo_final_9 = float(quant_peca_9) * float(valor_peca_9) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_9:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-
-        with st.container():
-            col250, col251, col252, col253, col254, col255 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col250:
-                gold_text("10")     
-            with col251:
-                quant_peca_10 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_10")
-            with col252:
-                desc_peca_10 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_10")
-            with col253:
-                valor_peca_10 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_10")
-            with col254: 
-                if quant_peca_10 and valor_peca_10:
-                    try:
-                        costo_inicial_10 = float(quant_peca_10) * float(valor_peca_10)
-                        gold_text(f"R$ {costo_inicial_10:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col255:
-                if quant_peca_10 and valor_peca_10 and porcentaje_adicional:
-                    try:
-                        costo_final_10 = float(quant_peca_10) * float(valor_peca_10) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_10:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col260, col261, col262, col263, col264, col265 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col260:
-                gold_text("11")     
-            with col261:
-                quant_peca_11 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_11")
-            with col262:
-                desc_peca_11 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_11")
-            with col263:
-                valor_peca_11 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_11")
-            with col264: 
-                if quant_peca_11 and valor_peca_11:
-                    try:
-                        costo_inicial_11 = float(quant_peca_11) * float(valor_peca_11)
-                        gold_text(f"R$ {costo_inicial_11:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col265:
-                if quant_peca_11 and valor_peca_11 and porcentaje_adicional:
-                    try:
-                        costo_final_11 = float(quant_peca_11) * float(valor_peca_11) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_11:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-
-        with st.container():
-            col270, col271, col272, col273, col274, col275 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col270:
-                gold_text("12")     
-            with col271:
-                quant_peca_12 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_12")
-            with col272:
-                desc_peca_12 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_12")
-            with col273:
-                valor_peca_12 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_12")
-            with col274: 
-                if quant_peca_12 and valor_peca_12:
-                    try:
-                        costo_inicial_12 = float(quant_peca_12) * float(valor_peca_12)
-                        gold_text(f"R$ {costo_inicial_12:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col275:
-                if quant_peca_12 and valor_peca_12 and porcentaje_adicional:
-                    try:
-                        costo_final_12 = float(quant_peca_12) * float(valor_peca_12) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_12:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-
-        with st.container():
-            col280, col281, col282, col283, col284, col285 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col280:
-                gold_text("13")     
-            with col281:
-                quant_peca_13 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_13")
-            with col282:
-                desc_peca_13 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_13")
-            with col283:
-                valor_peca_13 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_13")
-            with col284: 
-                if quant_peca_13 and valor_peca_13:
-                    try:
-                        costo_inicial_13 = float(quant_peca_13) * float(valor_peca_13)
-                        gold_text(f"R$ {costo_inicial_13:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col285:
-                if quant_peca_13 and valor_peca_13 and porcentaje_adicional:
-                    try:
-                        costo_final_13 = float(quant_peca_13) * float(valor_peca_13) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_13:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-
-        with st.container():
-            col290, col291, col292, col293, col294, col295 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col290:
-                gold_text("14")     
-            with col291:
-                quant_peca_14 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_14")
-            with col292:
-                desc_peca_14 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_14")
-            with col293:
-                valor_peca_14 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_14")
-            with col294: 
-                if quant_peca_14 and valor_peca_14:
-                    try:
-                        costo_inicial_14 = float(quant_peca_14) * float(valor_peca_14)
-                        gold_text(f"R$ {costo_inicial_14:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col295:
-                if quant_peca_14 and valor_peca_14 and porcentaje_adicional:
-                    try:
-                        costo_final_14 = float(quant_peca_14) * float(valor_peca_14) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_14:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            col300, col301, col302, col303, col304, col305 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with col300:
-                gold_text("15")     
-            with col301:
-                quant_peca_15 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_15")
-            with col302:
-                desc_peca_15 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_15")
-            with col303:
-                valor_peca_15 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_15")
-            with col304: 
-                if quant_peca_15 and valor_peca_15:
-                    try:
-                        costo_inicial_15 = float(quant_peca_15) * float(valor_peca_15)
-                        gold_text(f"R$ {costo_inicial_15:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with col305:
-                if quant_peca_15 and valor_peca_15 and porcentaje_adicional:
-                    try:
-                        costo_final_15 = float(quant_peca_15) * float(valor_peca_15) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_15:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-
-        with st.container():
-            coll310, coll311, coll312, coll313, col304, coll315 = st.columns([0.3, 0.5, 3, 0.7, 0.7, 0.7])
-            with coll310:
-                gold_text("16")     
-            with coll311:
-                quant_peca_16 = st.text_input("", "1", label_visibility="collapsed", key="quant_peca_16")
-            with coll312:
-                desc_peca_16 = st.text_input("", "", label_visibility="collapsed", key="desc_peca_16")
-            with coll313:
-                valor_peca_16 = st.number_input("", value=None, label_visibility="collapsed", key="valor_peca_16")
-            with col304: 
-                if quant_peca_16 and valor_peca_16:
-                    try:
-                        costo_inicial_16 = float(quant_peca_16) * float(valor_peca_16)
-                        gold_text(f"R$ {costo_inicial_16:.2f}")
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-            with coll315:
-                if quant_peca_16 and valor_peca_16 and porcentaje_adicional:
-                    try:
-                        costo_final_16 = float(quant_peca_16) * float(valor_peca_16) * (1 + porcentaje_adicional/100)
-                        gold_text(f"R$ {costo_final_16:.2f}")        
-                    except:
-                        gold_text("R$ 0.00")
-                else:
-                    gold_text("R$ 0.00")
-        
-        line(4, "blue")
-        
-        # Asegurar que el DataFrame existente tenga todas las columnas en el orden correcto
-        #existing_data = existing_data.reindex(columns=columnas_ordenadas)
-     
-        with st.container():
-            col320, col321, col322, col323, col324 = st.columns([1.2, 1.2, 1, 1, 1])
-            with col322:
-                submit_button = st.form_submit_button("Enviar")
-            if submit_button:
-                # Crear un nuevo registro con los datos del formulario
-                new_record = {
-                    'user_id': obtener_proximo_id(existing_data),
-                    'date_in': data_entrada,
-                    'date_prev': previsao_entrega,
-                    'date_out': data_saida,
-                    'carro': carro,
-                    'modelo': modelo,
-                    'cor': cor,
-                    'placa': placa,
-                    'km': km,
-                    'ano': ano,
-                    'estado': estado,
-                    'mecanico': mecanico,
-                    'dono_empresa': dono_empresa,
-                    'telefone': telefone,
-                    'endereco': endereco,
-                    'item_serv_1': item_serv_1 if 'item_serv_1' in locals() else None,
-                    'desc_ser_1': desc_ser_1 if 'desc_ser_1' in locals() else None,
-                    'valor_serv_1': valor_serv_1 if 'valor_serv_1' in locals() else None,
-                    'item_serv_2': item_serv_2 if 'item_serv_2' in locals() else None,
-                    'desc_ser_2': desc_ser_2 if 'desc_ser_2' in locals() else None,
-                    'valor_serv_2': valor_serv_2 if 'valor_serv_2' in locals() else None,
-                    'item_serv_3': item_serv_3 if 'item_serv_3' in locals() else None,
-                    'desc_ser_3': desc_ser_3 if 'desc_ser_3' in locals() else None,
-                    'valor_serv_3': valor_serv_3 if 'valor_serv_3' in locals() else None,
-                    'item_serv_4': item_serv_4 if 'item_serv_4' in locals() else None,
-                    'desc_ser_4': desc_ser_4 if 'desc_ser_4' in locals() else None,
-                    'valor_serv_4': valor_serv_4 if 'valor_serv_4' in locals() else None,
-                    'item_serv_5': item_serv_5 if 'item_serv_5' in locals() else None,
-                    'desc_ser_5': desc_ser_5 if 'desc_ser_5' in locals() else None,
-                    'valor_serv_5': valor_serv_5 if 'valor_serv_5' in locals() else None,
-                    'item_serv_6': item_serv_6 if 'item_serv_6' in locals() else None,
-                    'desc_ser_6': desc_ser_6 if 'desc_ser_6' in locals() else None,
-                    'valor_serv_6': valor_serv_6 if 'valor_serv_6' in locals() else None,
-                    'item_serv_7': item_serv_7 if 'item_serv_7' in locals() else None,
-                    'desc_ser_7': desc_ser_7 if 'desc_ser_7' in locals() else None,
-                    'valor_serv_7': valor_serv_7 if 'valor_serv_7' in locals() else None,
-                    'item_serv_8': item_serv_8 if 'item_serv_8' in locals() else None,
-                    'desc_ser_8': desc_ser_8 if 'desc_ser_8' in locals() else None,
-                    'valor_serv_8': valor_serv_8 if 'valor_serv_8' in locals() else None,
-                    'item_serv_9': item_serv_9 if 'item_serv_9' in locals() else None,
-                    'desc_ser_9': desc_ser_9 if 'desc_ser_9' in locals() else None,
-                    'valor_serv_9': valor_serv_9 if 'valor_serv_9' in locals() else None,
-                    'item_serv_10': item_serv_10 if 'item_serv_10' in locals() else None,
-                    'desc_ser_10': desc_ser_10 if 'desc_ser_10' in locals() else None,
-                    'valor_serv_10': valor_serv_10 if 'valor_serv_10' in locals() else None,
-                    'item_serv_11': item_serv_11 if 'item_serv_11' in locals() else None,
-                    'desc_ser_11': desc_ser_11 if 'desc_ser_11' in locals() else None,
-                    'valor_serv_11': valor_serv_11 if 'valor_serv_11' in locals() else None,
-                    'item_serv_12': item_serv_12 if 'item_serv_12' in locals() else None,
-                    'desc_ser_12': desc_ser_12 if 'desc_ser_12' in locals() else None,
-                    'valor_serv_12': valor_serv_12 if 'valor_serv_12' in locals() else None,
-                    'total_serviço': None,
-                    'porcentaje_adicional': porcentaje_adicional,
-                    'quant_peca_1': quant_peca_1 if 'quant_peca_1' in locals() else None,
-                    'desc_peca_1': desc_peca_1 if 'desc_peca_1' in locals() else None,
-                    'valor_peca_1': valor_peca_1 if 'valor_peca_1' in locals() else None,
-                    'sub_tota_peca_1': costo_inicial_1 if 'costo_inicial_1' in locals() else 0,
-                    'valor_total_peca_1': costo_final_1 if 'costo_final_1' in locals() else 0,             
-                    'quant_peca_2': quant_peca_2 if 'quant_peca_2' in locals() else None,
-                    'desc_peca_2': desc_peca_2 if 'desc_peca_2' in locals() else None,
-                    'valor_peca_2': valor_peca_2 if 'valor_peca_2' in locals() else None,
-                    'sub_tota_peca_2': costo_inicial_2 if 'costo_inicial_2' in locals() else 0,
-                    'valor_total_peca_2': costo_final_2 if 'costo_final_2' in locals() else 0,                   
-                    'quant_peca_3': quant_peca_3 if 'quant_peca_3' in locals() else None,
-                    'desc_peca_3': desc_peca_3 if 'desc_peca_3' in locals() else None,
-                    'valor_peca_3': valor_peca_3 if 'valor_peca_3' in locals() else None,
-                    'sub_tota_peca_3': costo_inicial_3 if 'costo_inicial_3' in locals() else 0,
-                    'valor_total_peca_3': costo_final_3 if 'costo_final_3' in locals() else 0,                   
-                    'quant_peca_4': quant_peca_4 if 'quant_peca_4' in locals() else None,
-                    'desc_peca_4': desc_peca_4 if 'desc_peca_4' in locals() else None,
-                    'valor_peca_4': valor_peca_4 if 'valor_peca_4' in locals() else None,
-                    'sub_tota_peca_4': costo_inicial_4 if 'costo_inicial_4' in locals() else 0,
-                    'valor_total_peca_4': costo_final_4 if 'costo_final_4' in locals() else 0,                    
-                    'quant_peca_5': quant_peca_5 if 'quant_peca_5' in locals() else None,
-                    'desc_peca_5': desc_peca_5 if 'desc_peca_5' in locals() else None,
-                    'valor_peca_5': valor_peca_5 if 'valor_peca_5' in locals() else None,
-                    'sub_tota_peca_5': costo_inicial_5 if 'costo_inicial_5' in locals() else 0,
-                    'valor_total_peca_5': costo_final_5 if 'costo_final_5' in locals() else 0,                    
-                    'quant_peca_6': quant_peca_6 if 'quant_peca_6' in locals() else None,
-                    'desc_peca_6': desc_peca_6 if 'desc_peca_6' in locals() else None,
-                    'valor_peca_6': valor_peca_6 if 'valor_peca_6' in locals() else None,
-                    'sub_tota_peca_6': costo_inicial_6 if 'costo_inicial_6' in locals() else 0,
-                    'valor_total_peca_6': costo_final_6 if 'costo_final_6' in locals() else 0,                  
-                    'quant_peca_7': quant_peca_7 if 'quant_peca_7' in locals() else None,
-                    'desc_peca_7': desc_peca_7 if 'desc_peca_7' in locals() else None,
-                    'valor_peca_7': valor_peca_7 if 'valor_peca_7' in locals() else None,
-                    'sub_tota_peca_7': costo_inicial_7 if 'costo_inicial_7' in locals() else 0,
-                    'valor_total_peca_7': costo_final_7 if 'costo_final_7' in locals() else 0,                      
-                    'quant_peca_8': quant_peca_8 if 'quant_peca_8' in locals() else None,
-                    'desc_peca_8': desc_peca_8 if 'desc_peca_8' in locals() else None,
-                    'valor_peca_8': valor_peca_8 if 'valor_peca_8' in locals() else None,
-                    'sub_tota_peca_8': costo_inicial_8 if 'costo_inicial_8' in locals() else 0,
-                    'valor_total_peca_8': costo_final_8 if 'costo_final_8' in locals() else 0,                      
-                    'quant_peca_9': quant_peca_9 if 'quant_peca_9' in locals() else None,
-                    'desc_peca_9': desc_peca_9 if 'desc_peca_9' in locals() else None,
-                    'valor_peca_9': valor_peca_9 if 'valor_peca_9' in locals() else None,
-                    'sub_tota_peca_9': costo_inicial_9 if 'costo_inicial_9' in locals() else 0,
-                    'valor_total_peca_9': costo_final_9 if 'costo_final_9' in locals() else 0,                     
-                    'quant_peca_10': quant_peca_10 if 'quant_peca_10' in locals() else None,
-                    'desc_peca_10': desc_peca_10 if 'desc_peca_10' in locals() else None,
-                    'valor_peca_10': valor_peca_10 if 'valor_peca_10' in locals() else None,
-                    'sub_tota_peca_10': costo_inicial_10 if 'costo_inicial_10' in locals() else 0,
-                    'valor_total_peca_10': costo_final_10 if 'costo_final_10' in locals() else 0,   
-                    'quant_peca_11': quant_peca_11 if 'quant_peca_11' in locals() else None,
-                    'desc_peca_11': desc_peca_11 if 'desc_peca_11' in locals() else None,
-                    'valor_peca_11': valor_peca_11 if 'valor_peca_11' in locals() else None,
-                    'sub_tota_peca_11': costo_inicial_11 if 'costo_inicial_11' in locals() else 0,
-                    'valor_total_peca_11': costo_final_11 if 'costo_final_11' in locals() else 0,                      
-                    'quant_peca_12': quant_peca_12 if 'quant_peca_12' in locals() else None,
-                    'desc_peca_12': desc_peca_12 if 'desc_peca_12' in locals() else None,
-                    'valor_peca_12': valor_peca_12 if 'valor_peca_12' in locals() else None,
-                    'sub_tota_peca_12': costo_inicial_12 if 'costo_inicial_12' in locals() else 0,
-                    'valor_total_peca_12': costo_final_12 if 'costo_final_12' in locals() else 0,                      
-                    'quant_peca_13': quant_peca_13 if 'quant_peca_13' in locals() else None,
-                    'desc_peca_13': desc_peca_13 if 'desc_peca_13' in locals() else None,
-                    'valor_peca_13': valor_peca_13 if 'valor_peca_13' in locals() else None,
-                    'sub_tota_peca_13': costo_inicial_13 if 'costo_inicial_13' in locals() else 0,
-                    'valor_total_peca_13': costo_final_13 if 'costo_final_13' in locals() else 0,                    
-                    'quant_peca_14': quant_peca_14 if 'quant_peca_14' in locals() else None,
-                    'desc_peca_14': desc_peca_14 if 'desc_peca_14' in locals() else None,
-                    'valor_peca_14': valor_peca_14 if 'valor_peca_14' in locals() else None,
-                    'sub_tota_peca_14': costo_inicial_14 if 'costo_inicial_14' in locals() else 0,
-                    'valor_total_peca_14': costo_final_14 if 'costo_final_14' in locals() else 0,                     
-                    'quant_peca_15': quant_peca_15 if 'quant_peca_15' in locals() else None,
-                    'desc_peca_15': desc_peca_15 if 'desc_peca_15' in locals() else None,
-                    'valor_peca_15': valor_peca_15 if 'valor_peca_15' in locals() else None,
-                    'sub_tota_peca_15': costo_inicial_15 if 'costo_inicial_15' in locals() else 0,
-                    'valor_total_peca_15': costo_final_15 if 'costo_final_15' in locals() else 0,                     
-                    'quant_peca_16': quant_peca_16 if 'quant_peca_16' in locals() else None,
-                    'desc_peca_16': desc_peca_16 if 'desc_peca_16' in locals() else None,
-                    'valor_peca_16': valor_peca_16 if 'valor_peca_16' in locals() else None,
-                    'sub_tota_peca_16': costo_inicial_16 if 'costo_inicial_16' in locals() else 0,
-                    'valor_total_peca_15': costo_final_16 if 'costo_final_16' in locals() else 0,                      
-                    'total_costo_inicial': sum([v for k, v in locals().items() if k.startswith('costo_inicial_')]),
-                    'total_costo_final': sum([v for k, v in locals().items() if k.startswith('costo_final_')]),
-                    'forma_de_pagamento': None,
-                    'pagamento_parcial': None,
-                    'valor_pago_parcial': None,
-                    'data_prox_pag': None,
-                    'valor_prox_pag': None,
-                    'pag_total': None,
-                    'valor_pag_total': None
-                }
-            
-                # Convertir el nuevo registro a DataFrame
-                new_record_df = pd.DataFrame([new_record])
-            
-                # Asegurar que el nuevo registro tenga todas las columnas en el orden correcto
-                #new_record_df = new_record_df.reindex(columns=columnas_ordenadas)
-            
-                # Reemplazar NaN con None en el nuevo registro
-                new_record_df = replace_nan_with_none(new_record_df)
-            
+        pecas = []
+        for i in range(1, 17):
+            col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
+            with col1:
+                quant = st.text_input("Qtd", value="1", key=f"quant_peca_{i}_new")
+            with col2:
+                desc = st.text_input("Descrição", key=f"desc_peca_{i}_new")
+            with col3:
+                valor = st.number_input("Valor unit", value=0.0, min_value=0.0, max_value=100000.0, step=0.01, key=f"valor_peca_{i}_new")
+            with col4:
                 try:
-                    # Obtener la hoja de cálculo
-                    #worksheet = gc.open_by_key(SPREADSHEET_KEY).worksheet(SHEET_NAME)
-                    
-                    # Agregar el nuevo registro al final de la hoja
-                    try:
-                        user_id = st.session_state.usuario
-                        ordens_ref = db.collection("usuarios").document(user_id).collection("ordens_servico")
-                        nova_ordem_ref = ordens_ref.document()
-                        nova_ordem_ref.set(new_record_df.to_dict(orient="records")[0])
-                        st.success("Ordem de serviço adicionada com sucesso")
-                    except Exception as e:
-                        st.error(f"Erro ao salvar no Firebase: {e}")
-                    
-                    st.success("Ordem de serviço adicionada com sucesso")
-                    
-                    # Actualizar la variable existing_data con los datos actualizados
-                    existing_data = pd.concat([existing_data, new_record_df], ignore_index=True)
-            
-                except Exception as e:
-                    st.error(f"Erro ao atualizar planilha: {str(e)}")
-            
-            # Mostrar la tabla actualizada
-            st.dataframe(existing_data, hide_index=True)
+                    subtotal = float(quant) * valor if quant else 0.0
+                    total = subtotal * (1 + porcentaje_adicional / 100)
+                except:
+                    subtotal = total = 0.0
+            pecas.append((quant, desc, valor, subtotal, total))
+
+        submitted = st.form_submit_button("Salvar nova ordem")
+
+        if submitted:
+            # Construir y guardar dict con os dados
+            user_id = st.session_state.usuario
+            dados = {
+                "user_id": obtener_proximo_id(existing_data),
+                "placa": placa,
+                "date_in": data_entrada,
+                "date_prev": previsao_entrega,
+                "date_out": data_saida,
+                "carro": carro,
+                "modelo": modelo,
+                "cor": cor,
+                "km": km,
+                "ano": ano,
+                "estado": estado,
+                "mecanico": mecanico,
+                "dono_empresa": dono_empresa,
+                "telefone": telefone,
+                "endereco": endereco,
+                "porcentaje_adicional": porcentaje_adicional,
+                "forma_de_pagamento": None
+            }
+
+            for i, (desc, valor) in enumerate(servicos, start=1):
+                dados[f"desc_ser_{i}"] = desc
+                dados[f"valor_serv_{i}"] = valor
+
+            for i, (quant, desc, valor_unit, subtotal, total) in enumerate(pecas, start=1):
+                dados[f"quant_peca_{i}"] = quant
+                dados[f"desc_peca_{i}"] = desc
+                dados[f"valor_peca_{i}"] = valor_unit
+                dados[f"sub_tota_peca_{i}"] = subtotal
+                dados[f"valor_total_peca_{i}"] = total
+
+            dados["total_costo_inicial"] = sum([v for _, _, _, v, _ in pecas])
+            dados["total_costo_final"] = sum([v for _, _, _, _, v in pecas])
+
+            db.collection("usuarios").document(user_id).collection("ordens_servico").add(dados)
+            st.success("Ordem de serviço adicionada com sucesso")
 
 # ==============================================================================================================================================================
 
