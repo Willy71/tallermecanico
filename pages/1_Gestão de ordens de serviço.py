@@ -1241,7 +1241,7 @@ if action == "Atualizar ordem existente":
         st.markdown("### 🚜 Serviços")
         servicos = []
         for i in range(1, 13):
-            colA, colB = st.columns([6, 2])
+            colA, colB = st.columns([7.2, 2.2])
             with colA:
                 desc = st.text_input(
                     f"Serviço {i}",
@@ -1257,7 +1257,7 @@ if action == "Atualizar ordem existente":
                     default_value = 0.0
         
                 valor = st.number_input(
-                    "",
+                     f"Valor {i}",
                     value=default_value,
                     min_value=0.0,
                     max_value=1000000.0,
