@@ -599,7 +599,7 @@ elif action == "Ver todos as ordens de serviço":
     # Mostrar solo las columnas existentes en el DataFrame (evita erro)
     colunas_visiveis = [col for col in colunas_desejadas if col in existing_data.columns]
     
-    st.dataframe(existing_data[colunas_visiveis])
+    st.dataframe(existing_data[colunas_visiveis], hide_index=True, use_container_width=True)
     
     # Opción para exportar a CSV (opcional)
     if st.button("Exportar para CSV"):
@@ -689,4 +689,13 @@ elif action == "Apagar ordem de serviço":
     
     # 5. Mostrar datos actualizados
     st.markdown("### Ordens restantes:")
-    st.dataframe(existing_data, hide_index=True, use_container_width=True)
+    colunas_desejadas = [
+        "user_id", "date_in", "date_prev", "date_out",
+        "carro", "modelo", "cor", "placa", "km", "ano",
+        "estado", "mecanico", "dono_empresa", "telefone", "endereco"
+        ]
+    # Mostrar solo las columnas existentes en el DataFrame (evita erro)
+    colunas_visiveis = [col for col in colunas_desejadas if col in existing_data.columns]
+    
+    st.dataframe(existing_data[colunas_visiveis], hide_index=True, use_container_width=True)
+    #st.dataframe(existing_data, hide_index=True, use_container_width=True)
