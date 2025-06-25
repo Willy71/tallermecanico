@@ -438,7 +438,7 @@ if action == "Atualizar ordem existente":
     
         col1, col2, col3 = st.columns(3)
         with col1:
-            placa = st.text_input("Placa", value=vendor_data.get("placa", ""))
+            placa = st.text_input("Placa", value=vendor_data.get("placa", ""), disabled=True)
         with col2:
             carro = st.text_input("Marca", value=vendor_data.get("carro", ""))
         with col3:
