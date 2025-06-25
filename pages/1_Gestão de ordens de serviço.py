@@ -302,20 +302,13 @@ if action == "Nova ordem de serviço":
         line(4, "blue")
         st.markdown("### 🚜 Serviços")
 
-        with st.container():
-            col_header_1, col_header_2 = st.columns([6.5, 2.2])
-            with col_header_1:
-                gold_text("Descrição do serviço")
-            with col_header_2:
-                gold_text("Valor do serviço")
-
         servicos = []
         for i in range(1, 13):
-            colA, colB = st.columns([6.5, 2.2])
+            colA, colB = st.columns([7.2, 2.2])
             with colA:
-                desc = st.text_input("", key=f"desc_ser_{i}_new", label_visibility="collapsed")
+                desc = st.text_input(f"Serviço {i}", key=f"desc_ser_{i}_new", label_visibility="collapsed")
             with colB:
-                valor = st.number_input("", min_value=0.0, max_value=100000.0, step=0.01, format="%.2f", key=f"valor_serv_{i}_new", label_visibility="collapsed")
+                valor = st.number_input(f"Valor {i}", min_value=0.0, max_value=100000.0, step=0.01, format="%.2f", key=f"valor_serv_{i}_new", label_visibility="collapsed")
             servicos.append((desc, valor))
 
         line(4, "blue")
@@ -390,8 +383,7 @@ if action == "Atualizar ordem existente":
     # Buscar ordem
     doc_id = None
     vendor_data = None
-    
-    st.markdown("### ✏️ Editar Ordem de Serviço")
+    st.markdown("### ✏🔧 Atualizar ordem existente")
     centrar_texto("Selecione o ID ou PLACA da Ordem de serviço que deseja atualizar.", 6, "yellow")
     
      # Eliminar filas con NaN en la columna "user_id"
@@ -442,7 +434,7 @@ if action == "Atualizar ordem existente":
    # Formulário completo para edição de ordem (com serviços e peças)
 
     with st.form("form_update_ordem_completo"):
-        st.markdown("### 🖊️ Editar Ordem de Serviço")
+        st.markdown("### 🖊️ Dados do carro")
     
         col1, col2, col3 = st.columns(3)
         with col1:
