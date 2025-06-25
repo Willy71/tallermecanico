@@ -314,8 +314,8 @@ if action == "Nova ordem de serviço":
         line(4, "blue")
         st.markdown("### 🔩 Peças")
 
-        col_perc = st.columns([1])[0]
-        with col_perc:
+        col_perc_1, col_perc_2, col_perc_3 = st.columns([3,2,3])
+        with col_perc_2:
             porcentaje_adicional = st.number_input("% adicional", min_value=0.0, max_value=100.0, value=35.0, step=0.5)
 
         pecas = []
@@ -434,7 +434,7 @@ if action == "Atualizar ordem existente":
    # Formulário completo para edição de ordem (com serviços e peças)
 
     with st.form("form_update_ordem_completo"):
-        st.markdown("### 🖊️ Dados do carro")
+        st.markdown("### 🚗 Dados do carro"")
     
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -480,8 +480,9 @@ if action == "Atualizar ordem existente":
             telefone = st.text_input("Telefone", value=vendor_data.get("telefone", ""))
         with col14:
             endereco = st.text_input("Endereço", value=vendor_data.get("endereco", ""))
-    
-        st.markdown("### 🚜 Serviços")
+            
+        line(4, "blue")
+        st.markdown("### ✅ Serviços")
         servicos = []
         for i in range(1, 13):
             colA, colB = st.columns([7.2, 2.2])
@@ -511,10 +512,15 @@ if action == "Atualizar ordem existente":
                 )
 
             servicos.append((desc, valor))
-
-        st.markdown("### 🛁 Peças")
+            
+        line(4, "blue")
+        st.markdown("### 🔩 Peças")
         pecas = []
-        porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 35)))
+
+        col_perc_1, col_perc_2, col_perc_3 = st.columns([3,2,3])
+        with col_perc_2:
+            porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 35)))
+        
         for i in range(1, 17):
             col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
             with col1:
