@@ -399,26 +399,26 @@ if action == "Atualizar ordem existente":
             search_option = st.radio("Buscar por:", ["Placa", "ID"])
             
             if search_option == "Placa":
-                placa_to_search = st.text_input("Digite o número da placa").strip().upper()
-                if placa_to_search:
-                    doc_id, vendor_data = buscar_ordem_por_placa_ou_id(placa_to_search, tipo="placa")
-                    if not vendor_data:
-                        st.warning("Nenhuma ordem de serviço encontrada.")
-                        st.stop()
-                    vendor_to_update = doc_id
+                with col201:
+                    placa_to_search = st.text_input("Digite o número da placa").strip().upper()
+                    if placa_to_search:
+                        doc_id, vendor_data = buscar_ordem_por_placa_ou_id(placa_to_search, tipo="placa")
+                        if not vendor_data:
+                            with col202:
+                                st.warning("Nenhuma ordem de serviço encontrada.")
+                                st.stop()
+                        vendor_to_update = doc_id
             else:
                 all_ordens = carregar_ordens()
                 ids_disponiveis = all_ordens["user_id"].astype(str).tolist()
                 id_selecionado = st.selectbox("Selecione o ID", options=ids_disponiveis)
                 doc_id, vendor_data = buscar_ordem_por_placa_ou_id(id_selecionado, tipo="id")
                 if not vendor_data:
-                    st.warning("Ordem não encontrada.")
-                    st.stop()
+                    with col202:
+                        st.warning("Ordem não encontrada.")
+                        st.stop()
             
                 vendor_to_update = doc_id
-                
-
-
                             
     #st.subheader("🧪 Diagnóstico de Google Sheets")
 
