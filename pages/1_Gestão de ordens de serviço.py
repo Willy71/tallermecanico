@@ -507,7 +507,6 @@ if action == "Atualizar ordem existente":
                     max_value=1000000.0,
                     step=0.01,
                     format="%.2f",
-                    label_visibility="collapsed",
                     key=f"valor_serv_{i}_edit"
                 )
 
