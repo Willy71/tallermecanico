@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html, body {
+            height: auto;
+            overflow: hidden;
+        }
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0 15px 15px 15px;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            max-width: 225px; /* 25% menor */
+        }
+
+        .company-info {
+            text-align: right;
+            font-size: 0.85em;
+            line-height: 1.3;
+            margin-top: 0; /* subir hacia arriba */
+        }
+
+        .date-in {
+            text-align: right;
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .border-box {
+            border: 2px solid #333;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .vehicle-info {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .vehicle-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .vehicle-left, .vehicle-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        .vehicle-footer {
+            font-size: 1em;
+            font-weight: normal;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 1em;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+            font-size: 0.85em; /* Letra más pequeña */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .total {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 5px;
+            font-size: 0.95em;
+        }
+        .vehicle-footer-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        
+        .vehicle-footer-line .left {
+            text-align: left;
+        }
+        
+        .vehicle-footer-line .right {
+            text-align: right;
+        }
+    
+        .label-small {
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+        
+        .value-small {
+            font-size: 0.95em;
+        }
+    
+        .label-owner {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .value-owner {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .valor-right {
+            text-align: right;
+            width: 80px;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div>
+            <img src="https://github.com/Willy71/oficina/blob/main/pictures/Logo%20oficina%20001.jpeg?raw=true" alt="Logo" class="logo">
+        </div>
+        <div class="company-info">
+            <h2>ZAMBRZYCKI Auto Center</h2>
+            <p>CNPJ: 116902840001-01 | INSC: 9105659668</p>
+            <p>ENDEREÇO: Rua Nicolau Florenzano 608, Uvaranas</p>
+            <p>Contato: (42) 999915-8454</p>
+        </div>
+    </div>
+
+    <!-- Recuadro de datos del vehículo más arriba -->
+    <div class="border-box vehicle-info">
+        <div class="vehicle-line">
+            <div class="vehicle-left">
+                {{placa}}
+            </div>
+            <div class="vehicle-right">
+                {{carro}} {{modelo}} {{ano}} {{cor}}
+            </div>
+        </div>
+        <div class="vehicle-footer-line">
+            <div class="left">
+                <span class="label-small">Data Entrada:</span>
+                <span class="value-small">{{date_in}}</span>
+            </div>
+            <div class="right">
+                <span class="label-owner">Proprietário:</span>
+                <span class="value-owner">{{dono_empresa}}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Sección de serviços com título y letras menores -->
+    <div class="border-box">
+        <h2 class="section-title">Serviços realizados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Descrição</th>
+                    <th class="valor-right">Valor (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for servico in servicos %}
+                <tr>
+                    <td>{{servico.Item}}</td>
+                    <td>{{servico.Descrição}}</td>
+                    <td class="valor-right">{{servico.Valor}}</td>
+                </tr>
+                {% endfor %}
+                {% for i in range(11 - servicos|length) %}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td></td>
+                    <td class="valor-right"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="total">Subtotal Serviços: R$ {{total_servicos}}</div>
+    </div>
+
+    <!-- Seção de peças com mesmo estilo -->
+    <div class="border-box">
+        <h2 class="section-title">Peças utilizadas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Quant</th>
+                    <th>Descrição</th>
+                    <th class="valor-right">Valor Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for peca in pecas %}
+                <tr>
+                    <td>{{peca.Quant}}</td>
+                    <td>{{peca.Descrição}}</td>
+                    <td class="valor-right">{{peca['Valor Final']}}</td>
+                </tr>
+                {% endfor %}
+                {% for i in range(15 - pecas|length) %}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td></td>
+                    <td class="valor-right"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="total">Subtotal Peças: R$ {{total_pecas_final}}</div>
+    </div>
+
+    <div class="total" style="font-size: 1.2em;">
+        TOTAL GERAL: R$ {{total_geral}}
+    </div>
+</body>
+</html>
