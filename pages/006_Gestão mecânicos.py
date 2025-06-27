@@ -71,7 +71,7 @@ st.title("🛠️ Relatório de Trabalhos por Mecânico")
 
 st.markdown("## 🎯 Filtros")
 
-df = cargar_datos()
+df = cargar_dados()
 df["date_in"] = pd.to_datetime(df["date_in"], dayfirst=True, errors='coerce')
 df = df.dropna(subset=["date_in"])
 df["date_in"] = df["date_in"].dt.date  # apenas a data
@@ -101,7 +101,7 @@ with col4:
 
 # ------------------------ FILTRAR E AGRUPAR ----------------------------------
 #if atualizar:
-df = cargar_datos()
+df = cargar_dados()
 df_filtrado = df[(df['date_in'] >= pd.to_datetime(data_inicial)) & (df['date_in'] <= pd.to_datetime(data_final))]
 
 # Remover linhas sem mecânico
