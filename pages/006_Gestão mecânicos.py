@@ -168,7 +168,7 @@ st.markdown("---")
 st.subheader("🔧 Gerenciar lista de Mecânicos")
 
 #ws_mecanicos = gc.open_by_key(SPREADSHEET_KEY).worksheet("Mecanicos")
-mecanicos_existentes = ws_mecanicos.col_values(1)[1:]  # Ignorar header
+mecanicos_existentes = cargar_mecanicos()
 
 with st.expander("➕ Adicionar novo mecânico"):
     novo_mecanico = st.text_input("Nome do novo mecânico")
