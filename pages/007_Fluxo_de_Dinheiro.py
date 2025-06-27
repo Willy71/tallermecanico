@@ -465,14 +465,14 @@ with aba4:
 
 
     # Gráfico
-    if not df_filtrado.empty:
-        df_grafico = pd.DataFrame({
-            "Tipo": ["Entradas", "Saídas", "Pendentes"],
-            "Valor": [total_entrada, total_saida, total_pendente]
-        })
-        st.bar_chart(df_grafico.set_index("Tipo"))
-    else:
-        st.info("Sem dados suficientes para exibir o gráfico.")
+    #if not df_filtrado.empty:
+     #   df_grafico = pd.DataFrame({
+      #      "Tipo": ["Entradas", "Saídas", "Pendentes"],
+       #     "Valor": [total_entrada, total_saida, total_pendente]
+      #  })
+     #   st.bar_chart(df_grafico.set_index("Tipo"))
+   # else:
+    #    st.info("Sem dados suficientes para exibir o gráfico.")
 
 
 with aba5:
