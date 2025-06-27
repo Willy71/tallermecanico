@@ -5,6 +5,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from firebase_config import db
+from firebase_admin import firestore
 
 #====================================================================================================================================================
 # Colocar background azul navy
