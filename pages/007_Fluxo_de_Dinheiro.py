@@ -11,22 +11,6 @@ st.set_page_config(
 )
 st.title("💰 Fluxo de Caixa")
 
-
-# Arquivo reescrito para uso com Firebase Firestore no lugar de Google Sheets
-# Nome: 007_Fluxo de Dinheiro.py
-
-import streamlit as st
-import pandas as pd
-from datetime import datetime, date
-from firebase_config import db
-
-st.set_page_config(
-    page_title="💰 Fluxo de Caixa",
-    page_icon="💰",
-    layout="wide"
-)
-st.title("💰 Fluxo de Caixa")
-
 def carregar_dados():
     user_id = st.session_state.usuario
     try:
