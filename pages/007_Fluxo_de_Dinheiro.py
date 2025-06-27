@@ -11,6 +11,11 @@ st.set_page_config(
 )
 st.title("💰 Fluxo de Caixa")
 
+if "usuario" not in st.session_state or not st.session_state.usuario:
+    st.warning("Você precisa estar logado para acessar o painel de controle.")
+    st.stop()
+
+
 def carregar_dados():
     user_id = st.session_state.usuario
     try:
