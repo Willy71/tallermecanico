@@ -14,7 +14,28 @@ st.title("💰 Fluxo de Caixa")
 def carregar_dados():
     user_id = st.session_state.usuario
     try:
-        docs = db.collection("usuarios").document(user_id).collection("fluxo").stream()
+        colecao = db.collection("usuarios").document(user_id).collection("fluxo")
+        docs = list(colecao.stream())
+
+        # 🧪 Si no hay documentos, crear uno con las columnas necesarias
+        if not docs:
+            dados_vazios = {
+                "ids": 0,
+                "data": "",
+                "data_pag": "",
+                "cliente": "",
+                "descricao": "",
+                "carro": "",
+                "placa": "",
+                "motivo": "",
+                "form": "",
+                "valor": "",
+                "status": ""
+            }
+            colecao.add(dados_vazios)
+            return pd.DataFrame([dados_vazios])  # Retornar algo en la primera carga
+
+        # Si ya hay datos, convertir normalmente
         data = [doc.to_dict() for doc in docs]
         df = pd.DataFrame(data)
         if not df.empty:
@@ -24,6 +45,7 @@ def carregar_dados():
     except Exception as e:
         st.error(f"Erro ao carregar dados: {e}")
         return pd.DataFrame()
+
 
 def adicionar_lancamento(status, data, data_pag, cliente, descricao, carro, placa, motivo, forma, valor):
     user_id = st.session_state.usuario
