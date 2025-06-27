@@ -175,14 +175,6 @@ def normalize_status(status):
     
     return status  # Mantener original si no coincide
 
-# Interface
-# Configuración de página (igual que tu código original)
-st.set_page_config(
-    page_title="💰 Fluxo de Caixa",
-    page_icon="💰",
-    layout="wide"
-)
-st.title("💰 Fluxo de Caixa")
 
 # Nuevo codigo
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
