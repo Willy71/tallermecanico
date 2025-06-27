@@ -17,6 +17,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+if "usuario" not in st.session_state or not st.session_state.usuario:
+    st.warning("Você precisa estar logado para acessar o painel de controle.")
+    st.stop()
+
 @st.cache_data(ttl=600)
 def cargar_dados():
     try:
