@@ -45,8 +45,9 @@ background: rgba(0,0,0,0);
 st.markdown(page_bg_color, unsafe_allow_html=True)
 
 #===================================================================================================================================================================
-
-from firebase_config import db
+if "usuario" not in st.session_state or not st.session_state.usuario:
+    st.warning("Você precisa estar logado para acessar o painel de controle.")
+    st.stop()
 
 @st.cache_data(ttl=600)
 def carregar_dados():
