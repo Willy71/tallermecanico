@@ -307,7 +307,11 @@ with aba3:
         lancamento = df[df["ids"] == id_escolhido].iloc[0]
 
         with st.form("form_edicao_id"):
-            nova_data = st.date_input("Data", pd.to_datetime(lancamento["data"], dayfirst=True))
+            data_padrao = pd.to_datetime(lancamento.get("data", ""), dayfirst=True, errors='coerce')
+            if pd.isna(data_padrao):
+                data_padrao = date.today()
+            nova_data = st.date_input("Data", data_padrao)
+            #nova_data = st.date_input("Data", pd.to_datetime(lancamento["data"], dayfirst=True))
             try:
                 data_pag_padrao = pd.to_datetime(lancamento["data_pag"], dayfirst=True)
                 if pd.isnull(data_pag_padrao):
