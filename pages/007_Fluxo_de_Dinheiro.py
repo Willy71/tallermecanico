@@ -465,10 +465,15 @@ with aba4:
 
 
     # Gráfico
-    df_grafico = pd.DataFrame({
-        "Tipo": ["Entradas", "Saídas", "Pendentes"],
-        "Valor": [total_entrada, total_saida, total_pendente]
-    })
+    if not df_filtrado.empty:
+        df_grafico = pd.DataFrame({
+            "Tipo": ["Entradas", "Saídas", "Pendentes"],
+            "Valor": [total_entrada, total_saida, total_pendente]
+        })
+        st.bar_chart(df_grafico.set_index("Tipo"))
+    else:
+        st.info("Sem dados suficientes para exibir o gráfico.")
+
 
 with aba5:
     st.subheader("📈 Análise de Gastos por Fornecedor")
