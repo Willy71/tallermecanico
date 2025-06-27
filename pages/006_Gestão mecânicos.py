@@ -72,9 +72,9 @@ st.title("🛠️ Relatório de Trabalhos por Mecânico")
 st.markdown("## 🎯 Filtros")
 
 df = cargar_dados()
-df["date_in"] = pd.to_datetime(df["date_in"], dayfirst=True, errors='coerce')
-df = df.dropna(subset=["date_in"])
-df["date_in"] = df["date_in"].dt.date  # apenas a data
+#df["date_in"] = pd.to_datetime(df["date_in"], dayfirst=True, errors='coerce')
+#df = df.dropna(subset=["date_in"])
+#df["date_in"] = df["date_in"].dt.date  # apenas a data
 
 if df.empty:
     st.warning("Nenhum dado com datas válidas foi encontrado.")
