@@ -3,6 +3,8 @@ import pandas as pd
 import uuid
 from datetime import datetime, date
 from firebase_config import db
+from calendar import monthrange
+import calendar
 
 st.set_page_config(
     page_title="💰 Fluxo de Caixa",
