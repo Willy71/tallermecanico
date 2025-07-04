@@ -312,11 +312,7 @@ with aba3:
         lancamento = df[df["ids"] == id_escolhido].iloc[0]
 
         with st.form("form_edicao_id"):
-            data_padrao = pd.to_datetime(lancamento.get("data", ""), dayfirst=True, errors='coerce')
-            if pd.isna(data_padrao):
-                data_padrao = date.today()
-            nova_data = st.date_input("Data", data_padrao)
-            #nova_data = st.date_input("Data", pd.to_datetime(lancamento["data"], dayfirst=True))
+            nova_data = st.date_input("Data", pd.to_datetime(lancamento["data"], dayfirst=True))
             try:
                 data_pag_padrao = pd.to_datetime(lancamento["data_pag"], dayfirst=True)
                 if pd.isnull(data_pag_padrao):
@@ -380,7 +376,7 @@ with aba3:
                 st.rerun()
             else:
                 st.warning("Erro ao remover lançamento.")
-
+#==============================================================================================================================================================
 with aba4:
     st.subheader("📊 Resumo Financeiro")
 
@@ -389,24 +385,54 @@ with aba4:
     # Limpieza robusta de datas
     df["status"] = df["status"].astype(str).str.strip().str.lower()
     df["valor"] = df["valor"].apply(safe_float)
-    df["data"] = pd.to_datetime(df["data"], dayfirst=True, errors='coerce')
-    df = df.dropna(subset=["data"])
-    df["data"] = df["data"].dt.date  # solo fecha, sin hora
+
+    df["data_pag"] = pd.to_datetime(df["data_pag"], dayfirst=True, errors='coerce')
+    df = df.dropna(subset=["data_pag"])
+    df["data_pag"] = df["data_pag"].dt.date
+
+    #df["data"] = pd.to_datetime(df["data"], dayfirst=True, errors='coerce')
+    #df = df.dropna(subset=["data"])
+    #df["data"] = df["data"].dt.date  # solo fecha, sin hora
 
     if df.empty:
         st.warning("Não há dados com datas válidas.")
     else:
-        data_min = min(df["data"])
-        data_max = max(df["data"])
+        data_min = min(df["data_pag"])
+        data_max = max(df["data_pag"])
 
         # Mostrar valores reales de rango de fechas
         st.caption(f"📅 Datas disponíveis: de {data_min.strftime('%d/%m/%Y')} até {data_max.strftime('%d/%m/%Y')}")
+	#======================================================
+        # Seleção de mês e ano
+        col_mes, col_ano = st.columns(2)
+        meses = {
+            0: "Todos os períodos...",
+            1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+            5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+            9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+        }
+        mes_selecionado = col_mes.selectbox("Mês", options=list(meses.keys()), format_func=lambda x: meses[x], index=0)
+        ano_atual = date.today().year
+        ano_selecionado = col_ano.selectbox("Ano", options=list(range(ano_atual, ano_atual - 6, -1)))
+        
+        # Definir datas padrão ou conforme mês selecionado
+        if mes_selecionado != 0:
+            primeiro_dia = date(ano_selecionado, mes_selecionado, 1)
+            ultimo_dia = date(ano_selecionado, mes_selecionado, monthrange(ano_selecionado, mes_selecionado)[1])
+        else:
+            primeiro_dia = data_min
+            ultimo_dia = data_max
 
-        col1, col2 = st.columns(2)
+
+	#======================================================
+        # Corrige datas fora do intervalo permitido
+        data_inicio_padrao = max(min(primeiro_dia, data_max), data_min)
+        data_fim_padrao = max(min(ultimo_dia, data_max), data_inicio_padrao)
+        
         with col1:
             data_inicio = st.date_input(
                 "Data início", 
-                value=data_min,
+                value=data_inicio_padrao,
                 min_value=data_min,
                 max_value=data_max,
                 key="inicio_resumo"
@@ -414,14 +440,17 @@ with aba4:
         with col2:
             data_fim = st.date_input(
                 "Data fim", 
-                value=data_max,
-                min_value=data_inicio,  # ⛔ garantiza que no sea anterior
+                value=data_fim_padrao,
+                min_value=data_inicio,
                 max_value=data_max,
                 key="fim_resumo"
             )
 
+
+
         # Filtrar dataframe
-        df_filtrado = df[(df["data"] >= data_inicio) & (df["data"] <= data_fim)]
+        df_filtrado = df[(df["data_pag"] >= data_inicio) & (df["data_pag"] <= data_fim)]
+        #df_filtrado = df[(df["data"] >= data_inicio) & (df["data"] <= data_fim)]
 
         # Cálculos
         total_entrada = df_filtrado[df_filtrado["status"] == "entrada"]["valor"].sum()
@@ -429,6 +458,7 @@ with aba4:
         total_pendente = df_filtrado[df_filtrado["status"] == "pendente"]["valor"].sum()
         saldo = total_entrada - total_saida
 
+        
         # Métricas
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("🟢 Entradas", formatar_real(total_entrada))
@@ -464,21 +494,44 @@ with aba4:
                 cor = {"entrada": "🟢", "saida": "🔴", "pendente": "🟡"}[mostrar_tipo]
                 titulo = {"entrada": "Entradas", "saida": "Saídas", "pendente": "Pendentes"}[mostrar_tipo]
                 st.markdown(f"#### {cor} {titulo}")
-        
-            st.dataframe(df_tipo.sort_values("data", ascending=False), use_container_width=True, hide_index=True)
+                
+            st.dataframe(df_tipo.sort_values("data_pag", ascending=False), use_container_width=True, hide_index=True)
 
+		# --- NOVA TABELA DE RESUMO ANUAL ---
+        st.markdown("---")
+        if ano_selecionado:
+            st.markdown(f"### Resumo Anual para {ano_selecionado}")
+            df_ano = df[df['data_pag'].map(lambda x: x.year) == ano_selecionado]
+            
+            dados_anuais = []
+            for mes_num in range(1, 13):
+                df_mes = df_ano[df_ano['data_pag'].map(lambda x: x.month) == mes_num]
+                
+                entradas = df_mes[df_mes['status'] == 'entrada']['valor'].sum()
+                saidas = df_mes[df_mes['status'] == 'saida']['valor'].sum()
+                pendentes = df_mes[df_mes['status'] == 'pendente']['valor'].sum()
+                lucro = entradas - saidas
+                
+                dados_anuais.append({
+                    "Mês": meses[mes_num],
+                    "Ano": ano_selecionado,
+                    "Entradas": entradas,
+                    "Saídas": saidas,
+                    "Pendentes": pendentes,
+                    "Lucro Mensal": lucro
+                })
+            
+            tabela_anual = pd.DataFrame(dados_anuais)
+            tabela_anual['Entradas'] = tabela_anual['Entradas'].apply(formatar_real)
+            tabela_anual['Saídas'] = tabela_anual['Saídas'].apply(formatar_real)
+            tabela_anual['Pendentes'] = tabela_anual['Pendentes'].apply(formatar_real)
+            tabela_anual['Lucro Mensal'] = tabela_anual['Lucro Mensal'].apply(formatar_real)
+            st.dataframe(tabela_anual, use_container_width=True, hide_index=True)
+        # --- FIM DA NOVA TABELA ---
 
+	
 
-    # Gráfico
-    #if not df_filtrado.empty:
-     #   df_grafico = pd.DataFrame({
-      #      "Tipo": ["Entradas", "Saídas", "Pendentes"],
-       #     "Valor": [total_entrada, total_saida, total_pendente]
-      #  })
-     #   st.bar_chart(df_grafico.set_index("Tipo"))
-   # else:
-    #    st.info("Sem dados suficientes para exibir o gráfico.")
-
+#==============================================================================================================================================================
 
 with aba5:
     st.subheader("📈 Análise de Gastos por Fornecedor")
