@@ -390,6 +390,7 @@ with aba4:
     df["valor"] = df["valor"].apply(safe_float)
 
     df["data_pag"] = pd.to_datetime(df["data_pag"], dayfirst=True, errors='coerce')
+	df["data_pag"] = df["data_pag"].dt.date
     df = df.dropna(subset=["data_pag"])
     df["data_pag"] = df["data_pag"].dt.date
 
