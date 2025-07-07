@@ -392,7 +392,7 @@ with aba4:
     df["data_pag"] = pd.to_datetime(df["data_pag"], dayfirst=True, errors='coerce')
     df["data_pag"] = df["data_pag"].dt.date
     df = df.dropna(subset=["data_pag"])
-    df["data_pag"] = df["data_pag"].dt.date
+	#df["data_pag"] = df["data_pag"].dt.date
 
     #df["data"] = pd.to_datetime(df["data"], dayfirst=True, errors='coerce')
     #df = df.dropna(subset=["data"])
