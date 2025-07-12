@@ -63,7 +63,7 @@ def adicionar_lancamento(status, data, data_pag, cliente, descricao, carro, plac
         "ids": novo_id,
         "status": status,
         "data": data.strftime("%d/%m/%Y"),
-	"data_pag": (data_pag or data).strftime("%d/%m/%Y"),
+	    "data_pag": (data_pag or data).strftime("%d/%m/%Y"),
         #"data_pag": data_pag.strftime("%d/%m/%Y") if data_pag else "",
         "cliente": cliente,
         "descricao": descricao,
@@ -220,42 +220,44 @@ aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
 
 with aba1:
     st.subheader("➕ Novo Registro")
-     # Mostrar información principal en cards
-    with st.container():
+
+    with st.form("form_novo_lancamento"):
         cols = st.columns(3)
         with cols[0]:
             tipo = st.selectbox("Tipo", ["entrada", "saida", "pendente"])
         with cols[1]:
             data = st.date_input("Data do lançamento")
-        with cols[2]:    
+        with cols[2]:
             data_pag = st.date_input("Data de pagamento prevista", value=None) if tipo == "pendente" else None
-    with st.container():
+
         cols = st.columns(3)
         with cols[1]:
             cliente = st.text_input("Cliente")
-    descricao = st.text_input("Descrição")
-    with st.container():
+
+        descricao = st.text_input("Descrição")
+
         cols = st.columns(4)
         with cols[1]:
             carro = st.text_input("Carro")
         with cols[2]:
             placa = st.text_input("Placa")
-      
-    motivo = st.text_input("Fornecedor")
-    with st.container():
+
+        motivo = st.text_input("Fornecedor")
+
         cols = st.columns(4)
         with cols[1]:
             forma = st.selectbox("Forma de pagamento", ["dinheiro", "pix", "cartão", "boleto", "outro"])
         with cols[2]:
             valor = st.number_input("Valor", min_value=0.0, format="%.2f")
-    with st.container():
-        cols = st.columns([3,2,2])
-        with cols[1]:
-            if st.button("Salvar Registro"):
-                adicionar_lancamento(tipo, data, data_pag, cliente, descricao, carro, placa, motivo, forma, valor)
-                st.success("Registro salvo com sucesso!")
-                # 👇 Forzar recarga
-                st.rerun()
+
+        submit = st.form_submit_button("Salvar Registro")
+
+        if submit:
+            adicionar_lancamento(tipo, data, data_pag, cliente, descricao, carro, placa, motivo, forma, valor)
+            st.success("Registro salvo com sucesso!")
+            st.session_state["dados_carregados"] = None  # Limpiar cache
+            st.rerun()
+
 
 with aba2:
     st.subheader("📋 Lançamentos")
