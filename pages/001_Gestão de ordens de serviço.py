@@ -316,7 +316,7 @@ if action == "Nova ordem de serviço":
 
         col_perc_1, col_perc_2, col_perc_3 = st.columns([3,2,3])
         with col_perc_2:
-            porcentaje_adicional = st.number_input("% adicional", min_value=0.0, max_value=100.0, value=35.0, step=0.5)
+            porcentaje_adicional = st.number_input("% adicional", min_value=0.0, max_value=100.0, value=65.0, step=0.5)
 
         pecas = []
         for i in range(1, 17):
