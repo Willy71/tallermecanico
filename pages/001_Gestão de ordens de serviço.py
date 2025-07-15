@@ -520,7 +520,7 @@ if action == "Atualizar ordem existente":
 
         col_perc_1, col_perc_2, col_perc_3 = st.columns([3,2,3])
         with col_perc_2:
-            porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 35)))
+            porcentaje_adicional = st.number_input("% adicional", value=float(vendor_data.get("porcentaje_adicional", 65)))
         
         for i in range(1, 17):
             col1, col2, col3, col4 = st.columns([1, 3, 2, 2])
