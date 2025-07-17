@@ -2,7 +2,8 @@
 
 import streamlit as st
 from firebase_config import auth_admin, db
-from firebase_admin import auth, firestore
+from firebase_admin import auth as auth_admin
+from firebase_admin import firestore
 #from google.firebase_admin import _auth_utils
 import os
 import requests
