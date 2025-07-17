@@ -45,16 +45,37 @@ if opcao == "Login":
     if st.button("Entrar"):
         try:
             # 1) Hacer sign-in por REST API para obtener idToken
-            import requests
+           
+            # … dentro de tu bloque de login …
             API_KEY = os.environ["FIREBASE_API_KEY"]
             resp = requests.post(
                 f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
-                json={"email": email, "password": senha, "returnSecureToken": True}
+                json={
+                    "email": email, 
+                    "password": senha, 
+                    "returnSecureToken": True
+                }
             )
-            resp.raise_for_status()
-            data = resp.json()
-            id_token      = data["idToken"]
-            refresh_token = data["refreshToken"]
+            
+            # En lugar de resp.raise_for_status(), haz esto:
+            if resp.status_code != 200:
+                error_info = resp.json().get("error", {}).get("message", "Unknown error")
+                st.error(f"Login fallido: {error_info}")
+            else:
+                data = resp.json()
+                id_token = data["idToken"]
+                # … resto de creación de session cookie …
+
+            
+            #API_KEY = os.environ["FIREBASE_API_KEY"]
+            #resp = requests.post(
+            #    f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
+            #    json={"email": email, "password": senha, "returnSecureToken": True}
+            #)
+            #resp.raise_for_status()
+            #data = resp.json()
+            #id_token      = data["idToken"]
+            #refresh_token = data["refreshToken"]
             
             # 2) Generar session cookie que dure hasta 14 días
             expires_in = timedelta(days=7)
