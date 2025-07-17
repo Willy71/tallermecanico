@@ -1,13 +1,9 @@
-# Home.py
-
 import streamlit as st
 from firebase_config import auth_admin, db
-from firebase_admin import auth, firestore 
-#from google.firebase_admin import _auth_utils
+from firebase_admin import auth, firestore
 import os
 import requests
 from datetime import timedelta
-import uuid
 
 st.set_page_config(page_title="Login - Oficinas", page_icon="🔧", layout="centered")
 
@@ -15,22 +11,18 @@ st.set_page_config(page_title="Login - Oficinas", page_icon="🔧", layout="cent
 params = st.experimental_get_query_params()
 session_cookie = params.get("fb_session", [None])[0]
 
-if session_cookie and "usuario" not in st.session_state:
+if session_cookie and not st.session_state.get("usuario"):
     try:
-        # decodifica y checa que no esté revocada
         decoded = auth_admin.verify_session_cookie(session_cookie, check_revoked=True)
         st.session_state.usuario = decoded["uid"]
     except Exception:
-        # si falla, borramos la cookie para forzar relogin
         st.experimental_set_query_params()  # limpia todos los params
         st.error("Tu sesión expiró, por favor ingresa de nuevo.")
         st.stop()
 # ————————————————————————————
 
-
-# Estado de sesión
-if "usuario" not in st.session_state:
-    st.session_state.usuario = None
+# Estado inicial de sesión
+st.session_state.setdefault("usuario", None)
 
 st.title("🔧 Gestão de Oficinas Mecânicas")
 st.subheader("Acesse sua conta ou registre sua oficina")
@@ -43,54 +35,31 @@ if opcao == "Login":
     senha = st.text_input("Senha", type="password")
 
     if st.button("Entrar"):
-        try:
-            # 1) Hacer sign-in por REST API para obtener idToken
-           
-            # … dentro de tu bloque de login …
-            API_KEY = os.environ["FIREBASE_API_KEY"]
+        # 1) Sign-in por REST API para obtener idToken
+        API_KEY = os.environ.get("FIREBASE_API_KEY")
+        if not API_KEY:
+            st.error("Error: no se encontró la variable FIREBASE_API_KEY en el entorno.")
+        else:
             resp = requests.post(
                 f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
-                json={
-                    "email": email, 
-                    "password": senha, 
-                    "returnSecureToken": True
-                }
+                json={"email": email, "password": senha, "returnSecureToken": True}
             )
-            
-            # En lugar de resp.raise_for_status(), haz esto:
             if resp.status_code != 200:
                 error_info = resp.json().get("error", {}).get("message", "Unknown error")
                 st.error(f"Login fallido: {error_info}")
             else:
                 data = resp.json()
-                id_token = data["idToken"]
-                # … resto de creación de session cookie …
-
-            
-            #API_KEY = os.environ["FIREBASE_API_KEY"]
-            #resp = requests.post(
-            #    f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}",
-            #    json={"email": email, "password": senha, "returnSecureToken": True}
-            #)
-            #resp.raise_for_status()
-            #data = resp.json()
-            #id_token      = data["idToken"]
-            #refresh_token = data["refreshToken"]
-            
-            # 2) Generar session cookie que dure hasta 14 días
-            expires_in = timedelta(days=7)
-            session_cookie = auth_admin.create_session_cookie(id_token, expires_in=expires_in)
-            
-            # 3) Guardar cookie en la URL (o Set-Cookie si montas un endpoint aparte)
-            st.experimental_set_query_params(fb_session=session_cookie)
-            
-            st.success("Login realizado con éxito!")
-            st.rerun()
-
-        except auth.UserNotFoundError:
-            st.error("Usuário não encontrado.")
-        except Exception as e:
-            st.error(f"Erro no login: {e}")
+                id_token = data.get("idToken")
+                if not id_token:
+                    st.error("No se recibió idToken de Firebase.")
+                else:
+                    # 2) Generar session cookie que dure al menos un día
+                    expires_in = timedelta(days=1)
+                    session_cookie = auth_admin.create_session_cookie(id_token, expires_in=expires_in)
+                    # 3) Guardar cookie en la URL
+                    st.experimental_set_query_params(fb_session=session_cookie)
+                    st.success("Login realizado con éxito!")
+                    st.experimental_rerun()
 
 # ------------- REGISTRO -------------------
 elif opcao == "Registrar nova oficina":
@@ -114,7 +83,7 @@ elif opcao == "Registrar nova oficina":
 
             st.success("Oficina registrada com sucesso!")
             st.session_state.usuario = oficina_id
-            st.rerun()
+            st.experimental_rerun()
         except auth.EmailAlreadyExistsError:
             st.error("Esse email já está registrado.")
         except Exception as e:
@@ -125,4 +94,4 @@ if st.session_state.usuario:
     st.success(f"Oficina logada: {st.session_state.usuario}")
     if st.button("Sair"):
         st.session_state.usuario = None
-        st.rerun()
+        st.experimental_rerun()
